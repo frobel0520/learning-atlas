@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="四條平行的學習路線：軟體工程、Guardrail、AI Agent 與 AWS，每條都是可以動手操作的繁體中文互動教材。">
+<title>學習總入口</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315201d'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h9' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+:root {
+  --bg: #f4f5f2;
+  --surface: #ffffff;
+  --ink: #17201d;
+  --ink-2: #4f5c57;
+  --rule: #d6dcd8;
+  --link: #0b6b5c;
+  --r-se: #2f5d8a;
+  --r-guard: #a3551c;
+  --r-agent: #6b4fa0;
+  --r-aws: #0b7a68;
+  --warn-bg: #f6ecd9;
+  --warn-ink: #7a4a0c;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0f1412;
+    --surface: #161d1a;
+    --ink: #e4ebe8;
+    --ink-2: #9eaea8;
+    --rule: #28332f;
+    --link: #4cc7ad;
+    --r-se: #7fb0e0;
+    --r-guard: #e59a5c;
+    --r-agent: #b59ae6;
+    --r-aws: #3fc4a9;
+    --warn-bg: #362a17;
+    --warn-ink: #e9b86a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1412;
+  --surface: #161d1a;
+  --ink: #e4ebe8;
+  --ink-2: #9eaea8;
+  --rule: #28332f;
+  --link: #4cc7ad;
+  --r-se: #7fb0e0;
+  --r-guard: #e59a5c;
+  --r-agent: #b59ae6;
+  --r-aws: #3fc4a9;
+  --warn-bg: #362a17;
+  --warn-ink: #e9b86a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--link); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 56px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+header { display: flex; flex-direction: column; gap: 12px; }
+.handle { font-family: var(--mono); font-size: .85rem; color: var(--ink-2); margin: 0; }
+h1 { margin: 0; font-size: clamp(2rem, 6vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
+.lede { margin: 0; font-size: 1.12rem; max-width: 36em; color: var(--ink); }
+
+.routes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.route {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 22px 18px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+.route-kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--c);
+}
+.route-kind::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--c);
+}
+.route h2 { margin: 0; font-size: 1.3rem; line-height: 1.35; }
+.route p { margin: 0; color: var(--ink-2); font-size: .95rem; }
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tags li {
+  font-size: .8rem;
+  padding: 1px 9px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink-2);
+}
+.status { font-size: .85rem; color: var(--ink-2); }
+.status.warn {
+  color: var(--warn-ink);
+  background: var(--warn-bg);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.links {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: .92rem;
+}
+.links a.primary { font-weight: 700; }
+.se { --c: var(--r-se); }
+.guard { --c: var(--r-guard); }
+.agent { --c: var(--r-agent); }
+.aws { --c: var(--r-aws); }
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding-top: 16px;
+  font-size: .85rem;
+  color: var(--ink-2);
+}
+footer p { margin: 0; }
+
+@media (max-width: 720px) {
+  .wrap { padding-block: 36px 48px; gap: 28px; }
+  .routes { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="handle">frobel0520</p>
+    <h1>學習總入口</h1>
+    <p class="lede">一邊做一邊學的繁體中文互動教材。四條路線各自是獨立的網站，可以從任何一條開始。</p>
+  </header>
+
+  <ul class="routes">
+    <li class="route se">
+      <span class="route-kind">軟體工程</span>
+      <h2>Software Engineering Workshop</h2>
+      <p>19 個核心主題，從開發基本功到交付部署；每個主題都有教材，以及在瀏覽器內執行的模擬實驗。</p>
+      <ul class="tags"><li>Git</li><li>REST API</li><li>資料庫</li><li>測試</li><li>Docker</li><li>CI/CD</li><li>部署</li></ul>
+      <span class="status">線上可直接使用</span>
+      <div class="links">
+        <a class="primary" href="https://frobel0520.github.io/software-engineering-workshop/">開啟網站 →</a>
+        <a href="https://github.com/frobel0520/software-engineering-workshop">GitHub</a>
+      </div>
+    </li>
+
+    <li class="route guard">
+      <span class="route-kind">AI 安全</span>
+      <h2>Guardrail Workshop</h2>
+      <p>LLM 應用的安全防護層：風險、input / output / tool 三個掛載點、框架選型。附互動實驗場，以及可以在本機跑的 FastAPI 縱深防禦服務。</p>
+      <ul class="tags"><li>Guardrails</li><li>Prompt injection</li><li>PII</li><li>FastAPI</li></ul>
+      <span class="status">教材與實驗場線上可用；後端服務需在本機執行</span>
+      <div class="links">
+        <a class="primary" href="https://frobel0520.github.io/guardrail-workshop/">開啟網站 →</a>
+        <a href="https://github.com/frobel0520/guardrail-workshop">GitHub</a>
+      </div>
+    </li>
+
+    <li class="route agent">
+      <span class="route-kind">AI Agent</span>
+      <h2>AI Agent Tutorial</h2>
+      <p>用 FastAPI、LangChain 與 Dify 練習 AI 應用的組法：REST API、RAG 問答、WebHook 事件，到 Dify 整合。</p>
+      <ul class="tags"><li>LangChain</li><li>RAG</li><li>WebHook</li><li>Dify</li></ul>
+      <span class="status warn">線上 API 已停用，網站只剩前端畫面；完整功能請依 README 在本機執行</span>
+      <div class="links">
+        <a class="primary" href="https://frobel0520.github.io/AI-Agent-Tutorial/">開啟網站 →</a>
+        <a href="https://github.com/frobel0520/AI-Agent-Tutorial">GitHub</a>
+      </div>
+    </li>
+
+    <li class="route aws">
+      <span class="route-kind">雲端 · AWS</span>
+      <h2>AWS Lab</h2>
+      <p>在 AWS 上使用生成式 AI：Bedrock 是什麼、Converse API、tool use、token 計費與 Guardrails，附格式對照與費用試算等實驗。</p>
+      <ul class="tags"><li>Bedrock</li><li>Converse API</li><li>Tool use</li><li>計費</li><li>Guardrails</li></ul>
+      <span class="status">線上可直接使用</span>
+      <div class="links">
+        <a class="primary" href="https://frobel0520.github.io/aws-lab/">開啟網站 →</a>
+        <a href="https://github.com/frobel0520/aws-lab">GitHub</a>
+      </div>
+    </li>
+  </ul>
+
+  <footer>
+    <p>所有網站都是靜態頁面，部署在 GitHub Pages；原始碼公開於 <a href="https://github.com/frobel0520">github.com/frobel0520</a>。</p>
+  </footer>
+</main>
+</body>
+</html>
