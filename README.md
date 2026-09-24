@@ -1,6 +1,6 @@
-# 學習總入口
+# Learning Atlas
 
-https://frobel0520.github.io/
+https://frobel0520.github.io/learning-atlas/
 
 串連五條平行學習路線的入口頁。每個網站都是獨立的 repo 與 GitHub Pages 網站，這裡只放連結，不收納任何網站的內容。
 
@@ -16,6 +16,6 @@ https://frobel0520.github.io/
 
 ## 部署
 
-單一靜態 `index.html`，不需要建置。repo 名稱為 `frobel0520.github.io` 時，GitHub Pages 會把它發布在帳號的根網址；在 Settings → Pages 選 `main` 分支、`/` 根目錄即可。
+單一靜態 `index.html`，不需要建置。GitHub Pages 以專案站台發布在 `https://frobel0520.github.io/learning-atlas/`；在 Settings → Pages 選 `main` 分支、`/` 根目錄即可。頁面裡的連結都是完整網址，改 repo 名稱不影響各路線網站。
 
 新增路線：在 `index.html` 的 `.routes` 清單加一個 `<li class="route">`，並更新上表。同一條路線有多個網站時，比照「程式語言」卡片，在卡片裡用 `.labs` 清單列出。
