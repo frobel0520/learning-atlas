@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="四條平行的學習路線：軟體工程、Guardrail、AI Agent 與 AWS，每條都是可以動手操作的繁體中文互動教材。">
+<meta name="description" content="五條平行的學習路線：軟體工程、Guardrail、AI Agent、AWS 與程式語言，每條都是可以動手操作的繁體中文互動教材。">
 <title>學習總入口</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315201d'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h9' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +21,7 @@
   --r-guard: #a3551c;
   --r-agent: #6b4fa0;
   --r-aws: #0b7a68;
+  --r-lang: #8a3d62;
   --warn-bg: #f6ecd9;
   --warn-ink: #7a4a0c;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -39,6 +40,7 @@
     --r-guard: #e59a5c;
     --r-agent: #b59ae6;
     --r-aws: #3fc4a9;
+    --r-lang: #e690b8;
     --warn-bg: #362a17;
     --warn-ink: #e9b86a;
   }
@@ -55,6 +57,7 @@
   --r-guard: #e59a5c;
   --r-agent: #b59ae6;
   --r-aws: #3fc4a9;
+  --r-lang: #e690b8;
   --warn-bg: #362a17;
   --warn-ink: #e9b86a;
 }
@@ -150,6 +153,26 @@ h1 { margin: 0; font-size: clamp(2rem, 6vw, 3rem); font-weight: 700; line-height
 .guard { --c: var(--r-guard); }
 .agent { --c: var(--r-agent); }
 .aws { --c: var(--r-aws); }
+.lang { --c: var(--r-lang); }
+
+.route.wide { grid-column: 1 / -1; }
+.labs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+.lab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+.lab h3 { margin: 0; font-size: 1.05rem; line-height: 1.4; }
+.lab .links { padding-top: 4px; border-top: 0; }
 
 footer {
   border-top: 1px solid var(--rule);
@@ -162,6 +185,7 @@ footer p { margin: 0; }
 @media (max-width: 720px) {
   .wrap { padding-block: 36px 48px; gap: 28px; }
   .routes { grid-template-columns: minmax(0, 1fr); }
+  .labs { grid-template-columns: minmax(0, 1fr); }
 }
 </style>
 </head>
@@ -170,7 +194,7 @@ footer p { margin: 0; }
   <header>
     <p class="handle">frobel0520</p>
     <h1>學習總入口</h1>
-    <p class="lede">一邊做一邊學的繁體中文互動教材。四條路線各自是獨立的網站，可以從任何一條開始。</p>
+    <p class="lede">一邊做一邊學的繁體中文互動教材。五條路線互不相依，可以從任何一條開始。</p>
   </header>
 
   <ul class="routes">
@@ -220,6 +244,41 @@ footer p { margin: 0; }
         <a class="primary" href="https://frobel0520.github.io/aws-lab/">開啟網站 →</a>
         <a href="https://github.com/frobel0520/aws-lab">GitHub</a>
       </div>
+    </li>
+    <li class="route lang wide">
+      <span class="route-kind">程式語言</span>
+      <h2>語法實戰 Lab</h2>
+      <p>給已經會其他語言的開發者：邊寫邊跑的練習題，附提示、解答、語言對照，草稿與進度存在瀏覽器裡。</p>
+      <ul class="tags"><li>TypeScript</li><li>Go</li><li>Python</li><li>FastAPI</li><li>Pydantic</li></ul>
+      <ul class="labs">
+        <li class="lab">
+          <h3>TypeScript Lab</h3>
+          <p>10 章 40 題，對照 C++、C#、Python；型別檢查與執行測試都在瀏覽器內完成。</p>
+          <span class="status">線上可直接使用</span>
+          <div class="links">
+            <a class="primary" href="https://frobel0520.github.io/typescript-lab/">開啟網站 →</a>
+            <a href="https://github.com/frobel0520/typescript-lab">GitHub</a>
+          </div>
+        </li>
+        <li class="lab">
+          <h3>Go Lab</h3>
+          <p>10 章 40 題，Monaco 編輯器與語言對照；練習以真實 Go 編譯器測試。</p>
+          <span class="status warn">題目與編輯器線上可用；線上編譯執行尚未開通，執行測試請依 README 在本機跑</span>
+          <div class="links">
+            <a class="primary" href="https://frobel0520.github.io/golang-lab/">開啟網站 →</a>
+            <a href="https://github.com/frobel0520/golang-lab">GitHub</a>
+          </div>
+        </li>
+        <li class="lab">
+          <h3>FastAPI Learning Lab</h3>
+          <p>14 個模組、111 堂課，依官方 Learn 導覽編排；練習在瀏覽器內以 Pyodide 執行並自動檢查。</p>
+          <span class="status">線上可直接使用；需支援 WebAssembly JSPI 的瀏覽器，已在 Chrome 驗證</span>
+          <div class="links">
+            <a class="primary" href="https://frobel0520.github.io/fastapi-learning-lab/">開啟網站 →</a>
+            <a href="https://github.com/frobel0520/fastapi-learning-lab">GitHub</a>
+          </div>
+        </li>
+      </ul>
     </li>
   </ul>
 
