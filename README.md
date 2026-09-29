@@ -1,8 +1,12 @@
 # Learning Atlas
 
+> 串連五條平行學習路線的入口頁。每個網站都是獨立的 repo 與 GitHub Pages 網站，這裡只放連結，不收納任何網站的內容。
+
+## 概覽
+
 https://frobel0520.github.io/learning-atlas/
 
-串連五條平行學習路線的入口頁。每個網站都是獨立的 repo 與 GitHub Pages 網站，這裡只放連結，不收納任何網站的內容。
+
 
 | 路線 | 網站 | Repo |
 | --- | --- | --- |
@@ -13,6 +17,20 @@ https://frobel0520.github.io/learning-atlas/
 | 程式語言 | [TypeScript Lab](https://frobel0520.github.io/typescript-lab/) | [typescript-lab](https://github.com/frobel0520/typescript-lab) |
 | 程式語言 | [Go Lab](https://frobel0520.github.io/golang-lab/) | [golang-lab](https://github.com/frobel0520/golang-lab) |
 | 程式語言 | [FastAPI Learning Lab](https://frobel0520.github.io/fastapi-learning-lab/) | [fastapi-learning-lab](https://github.com/frobel0520/fastapi-learning-lab) |
+
+## 主要功能／內容
+
+串連軟體工程、AI 安全、AI Agent、AWS 與程式語言學習網站的入口頁；各站有獨立 repository。
+
+## 現況與已知限制
+
+入口頁列出的各站由獨立 repository 維護；各站進度與限制以對應專案 README 為準。
+
+## 授權與來源
+
+Repository 根目錄未見授權檔；此 README 不另行宣告使用或再散布權利。
+
+---
 
 ## 主站與子站導覽
 
