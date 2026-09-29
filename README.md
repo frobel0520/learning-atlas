@@ -46,4 +46,8 @@ Repository 根目錄未見授權檔；此 README 不另行宣告使用或再散�
 
 單一靜態 `index.html`，不需要建置。GitHub Pages 以專案站台發布在 `https://frobel0520.github.io/learning-atlas/`；在 Settings → Pages 選 `main` 分支、`/` 根目錄即可。頁面裡的連結都是完整網址，改 repo 名稱不影響各路線網站。
 
-新增路線：在 `index.html` 的 `.routes` 清單加一個 `<li class="route">`，並更新上表。同一條路線有多個網站時，比照「程式語言」卡片，在卡片裡用 `.labs` 清單列出。
+新增路線：在 `index.html` 的 `.routes` 清單加一個 `<li class="route">`（左邊 `.route-head`、右邊 `.route-body`），並更新上表與側欄 `#route-nav` 的連結。同一條路線有多個網站時，比照「程式語言」卡片，在卡片裡用 `.labs` 清單列出。
+
+## 視覺設計
+
+版面、色票與字體對照 [Software Engineering Workshop](https://github.com/frobel0520/software-engineering-workshop) 的 Engineering Field Manual 方向（見該 repo 的 `design-direction.md`）：米色紙底 `#f1ecde`、深青主色 `#1b4b5a`、Newsreader + Noto Serif TC 標題、Noto Sans TC 介面、DM Mono 標籤，方角、細線分隔，沒有深色主題。所有 token 都寫在 `index.html` 開頭的 `:root`。

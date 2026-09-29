@@ -4,288 +4,476 @@
 <meta charset="utf-8">
 <script src="https://harbor-1wk.pages.dev/embed/maintenance.js" data-project="learning-hub"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f1ecde">
 <meta name="description" content="五條平行的學習路線：軟體工程、Guardrail、AI Agent、AWS 與程式語言，每條都是可以動手操作的繁體中文互動教材。">
 <title>Learning Atlas</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315201d'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h9' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231b4b5a'/%3E%3Cpath d='M16 22h32M16 32h32M16 42h20' stroke='%23f1ecde' stroke-width='5' stroke-linecap='square'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700;900&display=swap">
 <style>
 :root {
-  --bg: #f4f5f2;
-  --surface: #ffffff;
-  --ink: #17201d;
-  --ink-2: #4f5c57;
-  --rule: #d6dcd8;
-  --link: #0b6b5c;
-  --r-se: #2f5d8a;
-  --r-guard: #a3551c;
-  --r-agent: #6b4fa0;
-  --r-aws: #0b7a68;
-  --r-lang: #8a3d62;
-  --warn-bg: #f6ecd9;
-  --warn-ink: #7a4a0c;
-  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+  --ink: #1a1a18;
+  --paper: #f1ecde;
+  --surface: #e6dcc4;
+  --line: #c8bea4;
+  --muted: #736d5a;
+  --teal: #4e8b91;
+  --teal-dark: #1b4b5a;
+  --coral: #a04a2a;
+  --shadow: 0 24px 48px rgba(39, 33, 22, 0.18);
+  --serif: "Newsreader", "Noto Serif TC", serif;
+  --body-serif: "Noto Serif TC", serif;
   --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #0f1412;
-    --surface: #161d1a;
-    --ink: #e4ebe8;
-    --ink-2: #9eaea8;
-    --rule: #28332f;
-    --link: #4cc7ad;
-    --r-se: #7fb0e0;
-    --r-guard: #e59a5c;
-    --r-agent: #b59ae6;
-    --r-aws: #3fc4a9;
-    --r-lang: #e690b8;
-    --warn-bg: #362a17;
-    --warn-ink: #e9b86a;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0f1412;
-  --surface: #161d1a;
-  --ink: #e4ebe8;
-  --ink-2: #9eaea8;
-  --rule: #28332f;
-  --link: #4cc7ad;
-  --r-se: #7fb0e0;
-  --r-guard: #e59a5c;
-  --r-agent: #b59ae6;
-  --r-aws: #3fc4a9;
-  --r-lang: #e690b8;
-  --warn-bg: #362a17;
-  --warn-ink: #e9b86a;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 body {
   margin: 0;
-  background: var(--bg);
+  min-width: 320px;
+  min-height: 100vh;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, .34) 0 1px, transparent 1.5px) 0 0 / 17px 17px,
+    var(--paper);
 }
-a { color: var(--link); text-underline-offset: 3px; }
-:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
-.wrap {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding-inline: 20px;
-  padding-block: 56px 64px;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-header { display: flex; flex-direction: column; gap: 12px; }
-.handle { font-family: var(--mono); font-size: .85rem; color: var(--ink-2); margin: 0; }
-h1 { margin: 0; font-size: clamp(2rem, 6vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
-.lede { margin: 0; font-size: 1.12rem; max-width: 36em; color: var(--ink); }
+a { color: var(--teal-dark); text-underline-offset: 4px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 3px; }
+button { font: inherit; cursor: pointer; }
 
-.routes {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-.route {
+/* shell */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  width: 276px;
+  padding: 34px 24px 28px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 22px 22px 18px;
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: 12px;
+  background: rgba(241, 236, 222, .96);
+  border-right: 1px solid var(--line);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.route-kind {
+.brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: var(--mono);
-  font-size: .78rem;
-  font-weight: 500;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--c);
+  gap: 14px;
+  padding-bottom: 42px;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
 }
-.route-kind::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: var(--c);
-}
-.route h2 { margin: 0; font-size: 1.3rem; line-height: 1.35; }
-.route p { margin: 0; color: var(--ink-2); font-size: .95rem; }
-.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.tags li {
-  font-size: .8rem;
-  padding: 1px 9px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  color: var(--ink-2);
-}
-.status { font-size: .85rem; color: var(--ink-2); }
-.status.warn {
-  color: var(--warn-ink);
-  background: var(--warn-bg);
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-.links {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  font-size: .92rem;
-}
-.links a.primary { font-weight: 700; }
-.se { --c: var(--r-se); }
-.guard { --c: var(--r-guard); }
-.agent { --c: var(--r-agent); }
-.aws { --c: var(--r-aws); }
-.lang { --c: var(--r-lang); }
-
-.route.wide { grid-column: 1 / -1; }
-.labs {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.brand-mark {
+  flex: none;
+  width: 42px;
+  height: 52px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px 24px;
+  place-items: center;
+  color: var(--paper);
+  background: var(--teal-dark);
+  font: 500 13px var(--mono);
+  letter-spacing: -.04em;
+  box-shadow: 6px 6px 0 var(--surface);
 }
-.lab {
+.brand b { display: block; max-width: 140px; font: 600 16px/1.12 var(--serif); letter-spacing: -.025em; }
+.brand small { display: block; margin-top: 6px; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; }
+.nav-label { margin: 30px 0 9px; color: var(--muted); font: 8px var(--mono); letter-spacing: .11em; }
+.sidebar nav { display: grid; }
+.sidebar nav a {
+  min-height: 46px;
+  padding: 11px 0;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 14px;
-  border-top: 1px solid var(--rule);
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200, 190, 164, .62);
+  transition: color .16s ease, padding .16s ease;
 }
-.lab h3 { margin: 0; font-size: 1.05rem; line-height: 1.4; }
-.lab .links { padding-top: 4px; border-top: 0; }
+.sidebar nav a:hover { color: var(--ink); padding-left: 7px; }
+.sidebar nav a span { width: 19px; color: var(--teal-dark); font: 10px var(--mono); }
+.sidebar nav a.active { color: var(--ink); font-weight: 700; }
+.sidebar nav a.active::after { content: ""; width: 28px; height: 1px; margin-left: auto; background: var(--teal-dark); }
+.sidebar-foot { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; line-height: 1.6; }
+.sidebar-foot a { font: 11px var(--mono); text-decoration: none; }
+.sidebar-foot a:hover { text-decoration: underline; }
 
-footer {
-  border-top: 1px solid var(--rule);
-  padding-top: 16px;
-  font-size: .85rem;
-  color: var(--ink-2);
+.main-area { margin-left: 276px; min-height: 100vh; }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 72px;
+  padding: 0 clamp(28px, 5vw, 78px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(241, 236, 222, .9);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(12px);
 }
+.breadcrumb, .top-status { display: flex; gap: 10px; color: var(--muted); font: 9px var(--mono); letter-spacing: .1em; }
+.breadcrumb b { color: var(--teal-dark); font-weight: 500; }
+.breadcrumb i { font-style: normal; }
+.menu-button { display: none; padding: 4px 8px; color: var(--ink); background: none; border: 0; font-size: 20px; }
+.menu-scrim { display: none; }
+.page {
+  max-width: 1320px;
+  margin: auto;
+  padding: 68px clamp(34px, 6vw, 92px) 120px;
+  animation: page-enter .6s cubic-bezier(.2, .7, .2, 1) both;
+}
+@keyframes page-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* hero */
+.kicker { margin: 0; color: var(--teal-dark); font: 500 9px var(--mono); letter-spacing: .13em; }
+.hero {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(44px, 6vw, 88px);
+  align-items: center;
+  min-height: 520px;
+  padding: 34px 0 68px;
+  border-bottom: 1px solid var(--line);
+}
+.hero h1 {
+  max-width: 760px;
+  margin: 22px 0 26px;
+  font: 500 clamp(52px, 6.1vw, 90px)/.98 var(--serif);
+  letter-spacing: -.055em;
+  text-wrap: pretty;
+}
+.hero h1 em { color: var(--teal-dark); font-weight: 400; font-style: italic; }
+.lede { max-width: 540px; margin: 0; color: var(--muted); font: 16px/1.9 var(--body-serif); text-wrap: pretty; }
+.hero-actions { display: flex; align-items: center; gap: 22px; margin-top: 38px; }
+.duration { color: var(--muted); font: 11px var(--body-serif); }
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 13px 18px;
+  color: var(--paper);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.button span { margin-left: 18px; color: #a9c7c6; }
+.button:hover { transform: translate(-3px, -3px); box-shadow: 3px 3px 0 var(--teal-dark); }
+.hero-visual {
+  position: relative;
+  min-height: 410px;
+  padding: 36px;
+  color: var(--paper);
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 5px), var(--teal-dark);
+  border: 1px solid rgba(26, 26, 24, .28);
+  box-shadow: 18px 22px 0 var(--surface), var(--shadow);
+  overflow: hidden;
+}
+.hero-visual::before { content: ""; position: absolute; inset: 36px auto 36px 54%; width: 1px; background: rgba(241, 236, 222, .2); }
+.visual-label { position: relative; color: #bad0cf; font: 9px var(--mono); letter-spacing: .12em; }
+.visual-title { position: relative; margin-top: 18px; font: 500 clamp(78px, 8vw, 118px)/1 var(--serif); letter-spacing: -.08em; }
+.route-lines { position: relative; display: grid; gap: 16px; margin-top: 18px; }
+.route-lines i { position: relative; display: block; height: 1px; background: rgba(241, 236, 222, .35); }
+.route-lines i::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: var(--at);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 0 0 4px var(--teal-dark), 0 0 0 5px var(--paper);
+}
+.route-lines i:nth-child(3)::after { background: #cf9c81; box-shadow: 0 0 0 4px var(--teal-dark), 0 0 0 5px #cf9c81; }
+.visual-footer { position: absolute; left: 36px; right: 36px; bottom: 28px; display: flex; justify-content: space-between; color: #aac2c2; font: 10px var(--mono); }
+.visual-footer b { color: var(--paper); }
+
+/* routes */
+.section-heading { margin: 82px 0 26px; }
+.section-heading h2 { margin: 6px 0 0; font: 500 31px/1.2 var(--serif); letter-spacing: -.035em; }
+.section-heading > p:last-child { margin: 8px 0 0; color: var(--muted); font: 13px var(--body-serif); }
+.routes { display: grid; gap: 48px; margin: 0; padding: 0; list-style: none; }
+.route {
+  display: grid;
+  grid-template-columns: minmax(210px, .28fr) minmax(0, 1fr);
+  border-top: 2px solid var(--ink);
+}
+.route-head { min-height: 100%; padding: 20px 28px 20px 0; border-right: 1px solid var(--line); }
+.route-no { display: block; color: var(--teal-dark); font: 500 29px var(--serif); }
+.route-kind { display: block; margin-top: 10px; color: var(--teal-dark); font: 500 9px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+.route h2 { margin: 6px 0 0; font: 600 19px/1.3 var(--serif); }
+.route-body { display: flex; flex-direction: column; gap: 14px; padding: 20px 0 22px 34px; }
+.route-body > p { margin: 0; max-width: 46em; color: var(--muted); font: 13px/1.85 var(--body-serif); text-wrap: pretty; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { padding: 1px 9px; color: var(--teal-dark); background: var(--surface); font: 10px/1.9 var(--mono); }
+.status { color: var(--muted); font: 12px/1.7 var(--body-serif); }
+.status::before { content: "● "; color: var(--teal); font-size: 9px; }
+.status.warn { padding: 8px 12px; color: var(--coral); background: rgba(160, 74, 42, .08); border-left: 2px solid var(--coral); }
+.status.warn::before { content: none; }
+.links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+.links a:not(.button) { font: 11px var(--mono); text-decoration: none; }
+.links a:not(.button):hover { text-decoration: underline; }
+
+.labs { display: grid; grid-template-columns: minmax(0, 1fr); margin: 4px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.lab { display: flex; flex-direction: column; gap: 10px; padding: 18px 18px 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+.lab h3 { margin: 0; font: 600 18px/1.3 var(--serif); }
+.lab p { margin: 0; color: var(--muted); font: 12px/1.8 var(--body-serif); }
+.lab .links { border-top-color: rgba(115, 109, 90, .3); }
+
+footer { margin-top: 82px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font: 12px var(--body-serif); }
 footer p { margin: 0; }
 
+@media (min-width: 1280px) {
+  .labs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 950px) {
+  .hero { gap: 35px; }
+}
 @media (max-width: 720px) {
-  .wrap { padding-block: 36px 48px; gap: 28px; }
-  .routes { grid-template-columns: minmax(0, 1fr); }
-  .labs { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { width: 260px; background: var(--paper); transform: translateX(-100%); transition: transform .25s; }
+  .sidebar.open { transform: translateX(0); }
+  .main-area { margin-left: 0; }
+  .menu-button { display: block; }
+  .menu-scrim.open { display: block; position: fixed; inset: 0 0 0 260px; z-index: 15; border: 0; background: rgba(26, 26, 24, .4); }
+  .topbar { height: 60px; padding: 0 18px; }
+  .breadcrumb { margin-right: auto; margin-left: 14px; }
+  .top-status { display: none; }
+  .page { padding: 38px 19px 72px; }
+  .hero { grid-template-columns: 1fr; min-height: 0; }
+  .hero h1 { font-size: 48px; }
+  .hero-visual { min-height: 320px; box-shadow: 10px 12px 0 var(--surface), var(--shadow); }
+  .hero-actions { align-items: flex-start; flex-direction: column; }
+  .routes { gap: 36px; }
+  .route { grid-template-columns: 1fr; }
+  .route-head { padding: 18px 0 14px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .route-body { padding: 18px 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .page { animation: none; }
+  .sidebar, .sidebar nav a, .button { transition: none; }
 }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <header>
-    <p class="handle">frobel0520</p>
-    <h1>Learning Atlas</h1>
-    <p class="lede">一邊做一邊學的繁體中文互動教材。五條路線互不相依，可以從任何一條開始。</p>
-  </header>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="路線導覽">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true">LA</span>
+      <span><b>Learning Atlas</b><small>FIELD MANUAL</small></span>
+    </a>
+    <p class="nav-label">目錄 / CONTENTS</p>
+    <nav>
+      <a href="#top" class="active"><span>00</span>總覽</a>
+    </nav>
+    <p class="nav-label">路線 / ROUTES</p>
+    <nav id="route-nav">
+      <a href="#se"><span>01</span>軟體工程</a>
+      <a href="#guard"><span>02</span>AI 安全</a>
+      <a href="#agent"><span>03</span>AI Agent</a>
+      <a href="#aws"><span>04</span>雲端 · AWS</a>
+      <a href="#lang"><span>05</span>程式語言</a>
+    </nav>
+    <div class="sidebar-foot">
+      <p>五條路線互不相依，可以從任何一條開始。</p>
+      <a href="https://github.com/frobel0520">github.com/frobel0520 ↗</a>
+    </div>
+  </aside>
+  <button class="menu-scrim" id="scrim" type="button" aria-label="關閉選單" tabindex="-1"></button>
 
-  <ul class="routes">
-    <li class="route se">
-      <span class="route-kind">軟體工程</span>
-      <h2>Software Engineering Workshop</h2>
-      <p>19 個核心主題，從開發基本功到交付部署；每個主題都有教材，以及在瀏覽器內執行的模擬實驗。</p>
-      <ul class="tags"><li>Git</li><li>REST API</li><li>資料庫</li><li>測試</li><li>Docker</li><li>CI/CD</li><li>部署</li></ul>
-      <span class="status">線上可直接使用</span>
-      <div class="links">
-        <a class="primary" href="https://frobel0520.github.io/software-engineering-workshop/">開啟網站 →</a>
-        <a href="https://github.com/frobel0520/software-engineering-workshop">GitHub</a>
-      </div>
-    </li>
+  <div class="main-area" id="top">
+    <header class="topbar">
+      <button class="menu-button" id="menu" type="button" aria-label="開啟選單" aria-expanded="false" aria-controls="sidebar">☰</button>
+      <div class="breadcrumb"><span>ATLAS</span><i>/</i><b>MAP</b></div>
+      <div class="top-status"><span>5 ROUTES</span><i aria-hidden="true">·</i><span>7 SITES</span></div>
+    </header>
 
-    <li class="route guard">
-      <span class="route-kind">AI 安全</span>
-      <h2>Guardrail Workshop</h2>
-      <p>LLM 應用的安全防護層：風險、input / output / tool 三個掛載點、框架選型。附互動實驗場，以及可以在本機跑的 FastAPI 縱深防禦服務。</p>
-      <ul class="tags"><li>Guardrails</li><li>Prompt injection</li><li>PII</li><li>FastAPI</li></ul>
-      <span class="status">教材與實驗場線上可用；後端服務需在本機執行</span>
-      <div class="links">
-        <a class="primary" href="https://frobel0520.github.io/guardrail-workshop/">開啟網站 →</a>
-        <a href="https://github.com/frobel0520/guardrail-workshop">GitHub</a>
-      </div>
-    </li>
+    <main class="page">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="kicker">LEARNING ATLAS / FROBEL0520</p>
+          <h1>Learning <em>Atlas</em></h1>
+          <p class="lede">一邊做一邊學的繁體中文互動教材。五條路線互不相依，可以從任何一條開始。</p>
+          <div class="hero-actions">
+            <a class="button" href="#routes">查看五條路線<span aria-hidden="true">→</span></a>
+            <span class="duration">先選路線，再進入該站的教材與實驗</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="visual-label">FIVE ROUTES</div>
+          <div class="visual-title">05</div>
+          <div class="route-lines">
+            <i style="--at: 18%"></i><i style="--at: 46%"></i><i style="--at: 72%"></i><i style="--at: 30%"></i><i style="--at: 58%"></i>
+          </div>
+          <div class="visual-footer"><span>07 SITES</span><b>OPEN</b></div>
+        </div>
+      </section>
 
-    <li class="route agent">
-      <span class="route-kind">AI Agent</span>
-      <h2>AI Agent Tutorial</h2>
-      <p>用 FastAPI、LangChain 與 Dify 練習 AI 應用的組法：REST API、RAG 問答、WebHook 事件，到 Dify 整合。</p>
-      <ul class="tags"><li>LangChain</li><li>RAG</li><li>WebHook</li><li>Dify</li></ul>
-      <span class="status warn">線上 API 已停用，網站只剩前端畫面；完整功能請依 README 在本機執行</span>
-      <div class="links">
-        <a class="primary" href="https://frobel0520.github.io/AI-Agent-Tutorial/">開啟網站 →</a>
-        <a href="https://github.com/frobel0520/AI-Agent-Tutorial">GitHub</a>
+      <div class="section-heading" id="routes">
+        <p class="kicker">ROUTES / 路線</p>
+        <h2>五條路線，任選一條開始</h2>
+        <p>每個網站都是獨立的 repo 與部署，這裡只放連結。</p>
       </div>
-    </li>
 
-    <li class="route aws">
-      <span class="route-kind">雲端 · AWS</span>
-      <h2>AWS Lab</h2>
-      <p>在 AWS 上使用生成式 AI：Bedrock 的呼叫、計費與防護，以及用 IAM、S3 + CloudFront、Lambda 與 GitHub Actions OIDC 把應用安全地放上 AWS。附權限評估、部署計畫等實驗。</p>
-      <ul class="tags"><li>Bedrock</li><li>Converse API</li><li>Guardrails</li><li>IAM</li><li>CloudFront</li><li>Lambda</li><li>OIDC</li></ul>
-      <span class="status">線上可直接使用</span>
-      <div class="links">
-        <a class="primary" href="https://frobel0520.github.io/aws-lab/">開啟網站 →</a>
-        <a href="https://github.com/frobel0520/aws-lab">GitHub</a>
-      </div>
-    </li>
-    <li class="route lang wide">
-      <span class="route-kind">程式語言</span>
-      <h2>語法實戰 Lab</h2>
-      <p>給已經會其他語言的開發者：邊寫邊跑的練習題，附提示、解答、語言對照，草稿與進度存在瀏覽器裡。</p>
-      <ul class="tags"><li>TypeScript</li><li>Go</li><li>Python</li><li>FastAPI</li><li>Pydantic</li></ul>
-      <ul class="labs">
-        <li class="lab">
-          <h3>TypeScript Lab</h3>
-          <p>10 章 40 題，對照 C++、C#、Python；型別檢查與執行測試都在瀏覽器內完成。</p>
-          <span class="status">線上可直接使用</span>
-          <div class="links">
-            <a class="primary" href="https://frobel0520.github.io/typescript-lab/">開啟網站 →</a>
-            <a href="https://github.com/frobel0520/typescript-lab">GitHub</a>
+      <ul class="routes">
+        <li class="route" id="se">
+          <div class="route-head">
+            <span class="route-no">01</span>
+            <span class="route-kind">軟體工程</span>
+            <h2>Software Engineering Workshop</h2>
+          </div>
+          <div class="route-body">
+            <p>19 個核心主題，從開發基本功到交付部署；每個主題都有教材，以及在瀏覽器內執行的模擬實驗。</p>
+            <ul class="tags"><li>Git</li><li>REST API</li><li>資料庫</li><li>測試</li><li>Docker</li><li>CI/CD</li><li>部署</li></ul>
+            <span class="status">線上可直接使用</span>
+            <div class="links">
+              <a class="button" href="https://frobel0520.github.io/software-engineering-workshop/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/software-engineering-workshop">GitHub ↗</a>
+            </div>
           </div>
         </li>
-        <li class="lab">
-          <h3>Go Lab</h3>
-          <p>10 章 40 題，Monaco 編輯器與語言對照；練習直接送到 Go 官方編譯服務執行與測試。</p>
-          <span class="status">線上可直接使用</span>
-          <div class="links">
-            <a class="primary" href="https://frobel0520.github.io/golang-lab/">開啟網站 →</a>
-            <a href="https://github.com/frobel0520/golang-lab">GitHub</a>
+
+        <li class="route" id="guard">
+          <div class="route-head">
+            <span class="route-no">02</span>
+            <span class="route-kind">AI 安全</span>
+            <h2>Guardrail Workshop</h2>
+          </div>
+          <div class="route-body">
+            <p>LLM 應用的安全防護層：風險、input / output / tool 三個掛載點、框架選型。附互動實驗場，以及可以在本機跑的 FastAPI 縱深防禦服務。</p>
+            <ul class="tags"><li>Guardrails</li><li>Prompt injection</li><li>PII</li><li>FastAPI</li></ul>
+            <span class="status">教材與實驗場線上可用；後端服務需在本機執行</span>
+            <div class="links">
+              <a class="button" href="https://frobel0520.github.io/guardrail-workshop/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/guardrail-workshop">GitHub ↗</a>
+            </div>
           </div>
         </li>
-        <li class="lab">
-          <h3>FastAPI Learning Lab</h3>
-          <p>14 個模組、111 堂課，依官方 Learn 導覽編排；練習在瀏覽器內以 Pyodide 執行並自動檢查。</p>
-          <span class="status">線上可直接使用；需支援 WebAssembly JSPI 的瀏覽器，已在 Chrome 驗證</span>
-          <div class="links">
-            <a class="primary" href="https://frobel0520.github.io/fastapi-learning-lab/">開啟網站 →</a>
-            <a href="https://github.com/frobel0520/fastapi-learning-lab">GitHub</a>
+
+        <li class="route" id="agent">
+          <div class="route-head">
+            <span class="route-no">03</span>
+            <span class="route-kind">AI Agent</span>
+            <h2>AI Agent Tutorial</h2>
+          </div>
+          <div class="route-body">
+            <p>用 FastAPI、LangChain 與 Dify 練習 AI 應用的組法：REST API、RAG 問答、WebHook 事件，到 Dify 整合。</p>
+            <ul class="tags"><li>LangChain</li><li>RAG</li><li>WebHook</li><li>Dify</li></ul>
+            <span class="status warn">線上 API 已停用，網站只剩前端畫面；完整功能請依 README 在本機執行</span>
+            <div class="links">
+              <a class="button" href="https://frobel0520.github.io/AI-Agent-Tutorial/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/AI-Agent-Tutorial">GitHub ↗</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="route" id="aws">
+          <div class="route-head">
+            <span class="route-no">04</span>
+            <span class="route-kind">雲端 · AWS</span>
+            <h2>AWS Lab</h2>
+          </div>
+          <div class="route-body">
+            <p>在 AWS 上使用生成式 AI：Bedrock 的呼叫、計費與防護，以及用 IAM、S3 + CloudFront、Lambda 與 GitHub Actions OIDC 把應用安全地放上 AWS。附權限評估、部署計畫等實驗。</p>
+            <ul class="tags"><li>Bedrock</li><li>Converse API</li><li>Guardrails</li><li>IAM</li><li>CloudFront</li><li>Lambda</li><li>OIDC</li></ul>
+            <span class="status">線上可直接使用</span>
+            <div class="links">
+              <a class="button" href="https://frobel0520.github.io/aws-lab/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/aws-lab">GitHub ↗</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="route" id="lang">
+          <div class="route-head">
+            <span class="route-no">05</span>
+            <span class="route-kind">程式語言</span>
+            <h2>語法實戰 Lab</h2>
+          </div>
+          <div class="route-body">
+            <p>給已經會其他語言的開發者：邊寫邊跑的練習題，附提示、解答、語言對照，草稿與進度存在瀏覽器裡。</p>
+            <ul class="tags"><li>TypeScript</li><li>Go</li><li>Python</li><li>FastAPI</li><li>Pydantic</li></ul>
+            <ul class="labs">
+              <li class="lab">
+                <h3>TypeScript Lab</h3>
+                <p>10 章 40 題，對照 C++、C#、Python；型別檢查與執行測試都在瀏覽器內完成。</p>
+                <span class="status">線上可直接使用</span>
+                <div class="links">
+                  <a class="button" href="https://frobel0520.github.io/typescript-lab/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/typescript-lab">GitHub ↗</a>
+                </div>
+              </li>
+              <li class="lab">
+                <h3>Go Lab</h3>
+                <p>10 章 40 題，Monaco 編輯器與語言對照；練習直接送到 Go 官方編譯服務執行與測試。</p>
+                <span class="status">線上可直接使用</span>
+                <div class="links">
+                  <a class="button" href="https://frobel0520.github.io/golang-lab/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/golang-lab">GitHub ↗</a>
+                </div>
+              </li>
+              <li class="lab">
+                <h3>FastAPI Learning Lab</h3>
+                <p>14 個模組、111 堂課，依官方 Learn 導覽編排；練習在瀏覽器內以 Pyodide 執行並自動檢查。</p>
+                <span class="status">線上可直接使用；需支援 WebAssembly JSPI 的瀏覽器，已在 Chrome 驗證</span>
+                <div class="links">
+                  <a class="button" href="https://frobel0520.github.io/fastapi-learning-lab/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/fastapi-learning-lab">GitHub ↗</a>
+                </div>
+              </li>
+            </ul>
           </div>
         </li>
       </ul>
-    </li>
-  </ul>
 
-  <footer>
-    <p>所有網站都是靜態頁面，部署在 GitHub Pages；原始碼公開於 <a href="https://github.com/frobel0520">github.com/frobel0520</a>。</p>
-  </footer>
-</main>
+      <footer>
+        <p>所有網站都是靜態頁面，部署在 GitHub Pages；原始碼公開於 <a href="https://github.com/frobel0520">github.com/frobel0520</a>。</p>
+      </footer>
+    </main>
+  </div>
+</div>
+<script>
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var scrim = document.getElementById('scrim');
+  var menu = document.getElementById('menu');
+  function setOpen(open) {
+    sidebar.classList.toggle('open', open);
+    scrim.classList.toggle('open', open);
+    menu.setAttribute('aria-expanded', String(open));
+  }
+  menu.addEventListener('click', function () { setOpen(!sidebar.classList.contains('open')); });
+  scrim.addEventListener('click', function () { setOpen(false); });
+  sidebar.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#route-nav a'));
+  if (!('IntersectionObserver' in window)) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) {
+        links.forEach(function (a) { a.classList.toggle('active', a === byId[en.target.id]); });
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  Object.keys(byId).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+})();
+</script>
 </body>
 </html>
