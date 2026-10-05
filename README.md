@@ -1,6 +1,6 @@
 # Learning Atlas
 
-> 串連五條平行學習路線的入口頁。每個網站都是獨立的 repo 與 GitHub Pages 網站，這裡只放連結，不收納任何網站的內容。
+> 串連五條平行學習路線的入口頁。每個學習網站都是獨立的 repo 與 GitHub Pages 網站，這裡只放連結、不收納它們的內容；另外有一區「HTML 教學」，放一頁讀完的小教材（`lessons/`），直接由本站提供。
 
 ## 概覽
 
@@ -18,9 +18,17 @@ https://frobel0520.github.io/learning-atlas/
 | 程式語言 | [Go Lab](https://frobel0520.github.io/golang-lab/) | [golang-lab](https://github.com/frobel0520/golang-lab) |
 | 程式語言 | [FastAPI Learning Lab](https://frobel0520.github.io/fastapi-learning-lab/) | [fastapi-learning-lab](https://github.com/frobel0520/fastapi-learning-lab) |
 
+## HTML 教學
+
+| 教學 | 網址 | 檔案 |
+| --- | --- | --- |
+| FSRS：聰明的澆花小幫手（ELI5，約 5 分鐘） | [lessons/fsrs.html](https://frobel0520.github.io/learning-atlas/lessons/fsrs.html) | `lessons/fsrs.html` |
+
+每份教學是一個獨立的 HTML 檔（樣式、互動都寫在同一個檔案裡，不需要建置），沿用本站的配色與字型；比喻與插圖自行撰寫、繪製。新增教學時，在 `index.html` 的「HTML 教學」區塊加一張卡片，並更新上表與頁首的 LESSON 數。
+
 ## 主要功能／內容
 
-串連軟體工程、AI 安全、AI Agent、AWS 與程式語言學習網站的入口頁；各站有獨立 repository。
+串連軟體工程、AI 安全、AI Agent、AWS 與程式語言學習網站的入口頁；各站有獨立 repository。「HTML 教學」區塊收錄單頁教材。
 
 ## 現況與已知限制
 
