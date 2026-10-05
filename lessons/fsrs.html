@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<script src="https://harbor-1wk.pages.dev/embed/maintenance.js" data-project="learning-hub"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f1ecde">
+<meta name="description" content="用照顧小花園的比喻，五分鐘看懂 FSRS：單字卡 App 怎麼決定哪天該複習哪張卡。">
+<title>FSRS 是什麼？給五歲小孩的複習排程課</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231b4b5a'/%3E%3Cpath d='M16 22h32M16 32h32M16 42h20' stroke='%23f1ecde' stroke-width='5' stroke-linecap='square'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;500;700&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --ink: #1a1a18;
+  --paper: #f1ecde;
+  --surface: #e6dcc4;
+  --line: #c8bea4;
+  --muted: #736d5a;
+  --teal: #4e8b91;
+  --teal-dark: #1b4b5a;
+  --coral: #a04a2a;
+  --leaf: #4f7a3a;
+  --soil-wet: #5a3d2b;
+  --soil-dry: #c9a77c;
+  --serif: "Newsreader", "Noto Serif TC", serif;
+  --body-serif: "Noto Serif TC", serif;
+  --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, .34) 0 1px, transparent 1.5px) 0 0 / 17px 17px,
+    var(--paper);
+}
+a { color: var(--teal-dark); text-underline-offset: 4px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 3px; }
+button { font: inherit; cursor: pointer; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+  padding: 0 clamp(16px, 5vw, 64px);
+  background: rgba(241, 236, 222, .92);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+.back { font: 12px var(--mono); text-decoration: none; }
+.back:hover { text-decoration: underline; }
+.crumb { color: var(--muted); font: 10px var(--mono); letter-spacing: .1em; }
+
+main { max-width: 860px; margin: 0 auto; padding: 48px 16px 96px; }
+@media (min-width: 720px) { main { padding: 64px 32px 120px; } }
+
+.kicker { margin: 0; color: var(--teal-dark); font: 500 10px var(--mono); letter-spacing: .13em; }
+h1 { margin: 16px 0 18px; font: 500 clamp(38px, 7vw, 64px)/1.05 var(--serif); letter-spacing: -.04em; text-wrap: pretty; }
+h1 em { color: var(--teal-dark); font-style: italic; font-weight: 400; }
+h2 { margin: 0 0 14px; font: 600 clamp(24px, 4vw, 30px)/1.3 var(--serif); letter-spacing: -.02em; }
+h3 { margin: 0 0 6px; font: 700 18px/1.4 var(--sans); }
+p { margin: 0 0 14px; }
+.lede { font: 19px/1.9 var(--body-serif); color: var(--ink); }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+
+section { padding: 44px 0; border-top: 1px solid var(--line); }
+section:first-of-type { border-top: 0; padding-top: 0; }
+
+.big-idea {
+  margin: 26px 0 0;
+  padding: 20px 22px;
+  background: var(--teal-dark);
+  color: var(--paper);
+  font: 500 20px/1.7 var(--body-serif);
+  box-shadow: 8px 8px 0 var(--surface);
+}
+.big-idea b { color: #f3d7a8; font-weight: 700; }
+
+/* 小花園：三盆花 */
+.garden { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0 10px; }
+.pot { text-align: center; padding: 12px 6px 10px; background: var(--surface); border: 1px solid var(--line); }
+.pot svg { width: 100%; max-width: 120px; height: auto; }
+.pot b { display: block; font-size: 15px; }
+.pot span { display: block; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* 小幫手記住的三件事 */
+.facts { display: grid; gap: 12px; margin: 18px 0 0; padding: 0; list-style: none; }
+@media (min-width: 720px) { .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.fact { padding: 16px 16px 14px; background: #fbf8f0; border: 1px solid var(--line); border-top: 3px solid var(--teal-dark); }
+.fact .emoji { font-size: 30px; line-height: 1; }
+.fact p { margin: 6px 0 0; font-size: 15px; }
+.fact small { display: block; margin-top: 8px; color: var(--muted); font: 11px/1.6 var(--mono); }
+
+/* 互動：土有多濕 */
+.lab {
+  margin: 20px 0 0;
+  padding: 18px;
+  background: #fbf8f0;
+  border: 1px solid var(--line);
+  box-shadow: 6px 6px 0 var(--surface);
+}
+.lab-grid { display: grid; gap: 16px; align-items: center; }
+@media (min-width: 720px) { .lab-grid { grid-template-columns: 200px minmax(0, 1fr); } }
+.lab svg { width: 100%; max-width: 200px; height: auto; display: block; margin: 0 auto; }
+.choice { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; padding: 0; border: 0; }
+.choice legend { margin-bottom: 6px; font-weight: 700; font-size: 15px; }
+.choice label { cursor: pointer; }
+.choice input { position: absolute; opacity: 0; pointer-events: none; }
+.choice span { display: inline-block; min-height: 40px; padding: 7px 14px; border: 1px solid var(--line); background: var(--paper); font-size: 14px; }
+.choice input:checked + span { background: var(--teal-dark); color: var(--paper); border-color: var(--teal-dark); }
+.choice input:focus-visible + span { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+.slider-label { display: block; font-weight: 700; font-size: 15px; }
+input[type="range"] { width: 100%; height: 40px; accent-color: var(--teal-dark); }
+.meter { height: 14px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--teal); transition: width .2s; }
+.readout { margin: 10px 0 0; font-size: 16px; }
+.readout b { font: 600 22px var(--serif); }
+.say { margin: 8px 0 0; padding: 10px 12px; background: var(--surface); font-size: 15px; }
+
+/* 澆水之後 */
+.two { display: grid; gap: 12px; margin-top: 16px; }
+@media (min-width: 720px) { .two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.case { padding: 16px; background: #fbf8f0; border: 1px solid var(--line); }
+.case.good { border-left: 4px solid var(--leaf); }
+.case.again { border-left: 4px solid var(--coral); }
+.case p:last-child { margin-bottom: 0; }
+
+/* 澆水日曆 */
+.calendar { width: 100%; border-collapse: collapse; margin: 16px 0 8px; font-size: 15px; }
+.calendar th, .calendar td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: center; }
+.calendar th:first-child, .calendar td:first-child { text-align: left; }
+.calendar thead th { font: 500 11px var(--mono); letter-spacing: .06em; color: var(--muted); }
+.calendar .fsrs td { color: var(--teal-dark); font-weight: 700; }
+.table-wrap { overflow-x: auto; }
+
+.helper { display: flex; gap: 14px; align-items: flex-start; margin-top: 18px; }
+.helper svg { flex: none; width: 72px; height: 72px; }
+.bubble { position: relative; padding: 12px 14px; background: #fbf8f0; border: 1px solid var(--line); font-size: 16px; }
+
+ul.plain { margin: 8px 0 0; padding-left: 1.2em; }
+ul.plain li { margin: 4px 0; }
+
+details { margin-top: 18px; border: 1px solid var(--line); background: #fbf8f0; }
+summary { padding: 14px 16px; cursor: pointer; font-weight: 700; list-style-position: inside; }
+details .inside { padding: 0 16px 16px; font-size: 15px; }
+details table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; }
+details th, details td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+details th { font: 500 11px var(--mono); color: var(--muted); }
+code, .formula { font-family: var(--mono); font-size: 14px; }
+.formula { display: block; margin: 8px 0; padding: 10px 12px; background: #171a17; color: #e8e2cf; overflow-x: auto; white-space: nowrap; }
+
+footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .meter i { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../">← Learning Atlas</a>
+  <span class="crumb">LESSONS / FSRS</span>
+</header>
+
+<main>
+  <section>
+    <p class="kicker">HTML 教學 · ELI5 · 約 5 分鐘</p>
+    <h1>FSRS 是什麼？<br><em>聰明的澆花小幫手</em></h1>
+    <p class="lede">背單字的 App 每天都要決定：「今天該讓你複習哪幾張卡？」FSRS 就是幫它做決定的方法。</p>
+    <p class="big-idea">一句話：FSRS 會記住你對每張卡記得多牢，然後<b>在你快要忘記之前</b>，剛好叫你再看一次。</p>
+  </section>
+
+  <section aria-labelledby="garden-title">
+    <h2 id="garden-title">你的記憶是一座小花園</h2>
+    <p>想像一下：你學會的每一個單字，都是一盆小花。</p>
+    <p>小花需要喝水，不然會慢慢枯掉。<b>「複習」就是幫它澆水。</b></p>
+    <div class="garden" aria-hidden="true">
+      <div class="pot">
+        <svg viewBox="0 0 120 120"><use href="#pot-base"/><path d="M60 92 V58" stroke="#4f7a3a" stroke-width="4"/><ellipse cx="48" cy="62" rx="12" ry="6" fill="#6c9a4f" transform="rotate(-25 48 62)"/><ellipse cx="72" cy="60" rx="12" ry="6" fill="#6c9a4f" transform="rotate(25 72 60)"/></svg>
+        <b>剛學的字</b><span>小苗，很快就口渴</span>
+      </div>
+      <div class="pot">
+        <svg viewBox="0 0 120 120"><use href="#pot-base"/><path d="M60 92 V38" stroke="#4f7a3a" stroke-width="5"/><ellipse cx="44" cy="58" rx="16" ry="7" fill="#5f8d45" transform="rotate(-25 44 58)"/><ellipse cx="76" cy="52" rx="16" ry="7" fill="#5f8d45" transform="rotate(25 76 52)"/><circle cx="60" cy="34" r="9" fill="#e7a5a0"/><circle cx="60" cy="34" r="4" fill="#f3d7a8"/></svg>
+        <b>有點熟的字</b><span>開花了，可以撐幾天</span>
+      </div>
+      <div class="pot">
+        <svg viewBox="0 0 120 120"><use href="#pot-base"/><rect x="56" y="48" width="8" height="44" fill="#7a5a3a"/><circle cx="60" cy="38" r="26" fill="#4f7a3a"/><circle cx="48" cy="32" r="12" fill="#5f8d45"/><circle cx="72" cy="40" r="12" fill="#5f8d45"/></svg>
+        <b>很熟的字</b><span>大樹，好久不喝水也沒事</span>
+      </div>
+    </div>
+    <p>每盆花都不一樣：有的很快就口渴，有的可以好幾天不喝水。如果每天把每盆都澆一遍，你會累壞；如果太久沒澆，花就枯了（你就忘記了）。</p>
+    <div class="helper">
+      <svg viewBox="0 0 72 72" role="img" aria-label="澆澆：一個有眼睛的澆水壺小幫手">
+        <rect x="14" y="26" width="34" height="30" rx="6" fill="#1b4b5a"/>
+        <path d="M48 34 L64 24 L66 28 L50 40 Z" fill="#1b4b5a"/>
+        <circle cx="66" cy="26" r="4" fill="#4e8b91"/>
+        <path d="M18 26 Q31 8 44 26" fill="none" stroke="#1b4b5a" stroke-width="4"/>
+        <circle cx="25" cy="39" r="4" fill="#f1ecde"/><circle cx="37" cy="39" r="4" fill="#f1ecde"/>
+        <circle cx="26" cy="40" r="2" fill="#1a1a18"/><circle cx="38" cy="40" r="2" fill="#1a1a18"/>
+        <path d="M26 48 Q31 52 36 48" fill="none" stroke="#f1ecde" stroke-width="2"/>
+      </svg>
+      <p class="bubble">我是澆澆！FSRS 就像我：我會記住每一盆花的狀況，<b>只在它快要口渴的時候</b>去澆水。這樣你每天只要照顧幾盆，整座花園都不會枯。</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="three-title">
+    <h2 id="three-title">澆澆幫每盆花記三件事</h2>
+    <ul class="facts">
+      <li class="fact">
+        <div class="emoji" aria-hidden="true">💧</div>
+        <h3>土現在有多濕</h3>
+        <p>剛澆完水是全濕，每過一天就乾一點。土越乾，你越可能想不起來。</p>
+        <small>大人的說法：可提取度 R（現在還記得的機率）</small>
+      </li>
+      <li class="fact">
+        <div class="emoji" aria-hidden="true">🌳</div>
+        <h3>能撐幾天不喝水</h3>
+        <p>小苗兩天就渴，大樹一個月都還好。每次成功澆水，它就長大一點、更能撐。</p>
+        <small>大人的說法：穩定度 S（從剛複習完降到九成記得要幾天）</small>
+      </li>
+      <li class="fact">
+        <div class="emoji" aria-hidden="true">🌵</div>
+        <h3>這盆花有多挑剔</h3>
+        <p>有些花很好養，有些很嬌貴。越挑剔的花，長大得越慢，要多照顧幾次。</p>
+        <small>大人的說法：難度 D（1～10）</small>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="when-title">
+    <h2 id="when-title">什麼時候該澆水？土還有「九成濕」的那天</h2>
+    <p>澆澆不會等花枯掉才澆，也不會一直澆。它會選土還有九成濕的那一天去澆，也就是「你還有九成機會想起來」的時候。</p>
+    <p>來試試看：選一盆花，再拉拉看「隔幾天沒澆水」。</p>
+
+    <div class="lab">
+      <div class="lab-grid">
+        <svg id="demo-plant" viewBox="0 0 200 200" role="img" aria-label="一盆花，土越乾葉子越下垂">
+          <rect x="0" y="0" width="200" height="200" fill="none"/>
+          <path d="M52 132 H148 L138 186 H62 Z" fill="#a04a2a"/>
+          <rect x="46" y="124" width="108" height="12" fill="#b85d38"/>
+          <ellipse id="soil" cx="100" cy="128" rx="50" ry="6" fill="#5a3d2b"/>
+          <g id="stem-group">
+            <path id="stem" d="M100 126 Q100 90 100 56" fill="none" stroke="#4f7a3a" stroke-width="6"/>
+            <ellipse id="leaf-l" cx="80" cy="92" rx="22" ry="9" fill="#5f8d45"/>
+            <ellipse id="leaf-r" cx="120" cy="84" rx="22" ry="9" fill="#5f8d45"/>
+            <circle id="flower" cx="100" cy="52" r="14" fill="#e7a5a0"/>
+            <circle cx="100" cy="52" r="6" fill="#f3d7a8" id="flower-core"/>
+          </g>
+        </svg>
+        <div>
+          <fieldset class="choice" id="plant-choice">
+            <legend>選一盆花</legend>
+            <label><input type="radio" name="plant" value="2" checked><span>小苗（撐 2 天）</span></label>
+            <label><input type="radio" name="plant" value="11"><span>開花的（撐 11 天）</span></label>
+            <label><input type="radio" name="plant" value="46"><span>大樹（撐 46 天）</span></label>
+          </fieldset>
+          <label class="slider-label" for="days">隔幾天沒澆水：<span id="days-out">0</span> 天</label>
+          <input id="days" type="range" min="0" max="120" value="0" step="1">
+          <div class="meter" aria-hidden="true"><i id="meter-fill" style="width:100%"></i></div>
+          <p class="readout" aria-live="polite">土的濕度（記得的機率）：<b id="r-out">100%</b></p>
+          <p class="say" id="say">剛澆完水，濕答答的！</p>
+        </div>
+      </div>
+    </div>
+    <p class="small muted">「撐幾天」的意思是：過了這麼多天，土剛好剩九成濕。超過以後會越來越乾，但不會一下子全乾，而是慢慢變乾。</p>
+  </section>
+
+  <section aria-labelledby="after-title">
+    <h2 id="after-title">澆完水以後，會發生什麼事？</h2>
+    <p>單字卡上有兩個按鈕：「記得」和「還不會」。按下去，就是告訴澆澆這盆花怎麼了。</p>
+    <div class="two">
+      <div class="case good">
+        <h3>🌱 按「記得」：花長大了</h3>
+        <p>這盆花變得更能撐，下次可以隔更久再澆。</p>
+        <p>神奇的是：<b>土比較乾的時候澆，花長得更多。</b>就像你差一點想不起來、努力想了一下才想起來，反而記得更牢。</p>
+      </div>
+      <div class="case again">
+        <h3>🥀 按「還不會」：花有點枯了</h3>
+        <p>沒關係！澆澆今天就會再幫它澆一次。</p>
+        <p>它也會記在小本子上：「這盆比較挑剔」，以後會多來看它幾次。花不會從頭開始，以前長的根還在，只是要多照顧一下。</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="calendar-title">
+    <h2 id="calendar-title">澆水日曆：舊方法 vs. 澆澆</h2>
+    <p>如果你每次都按「記得」，兩種方法會叫你在第幾天後再複習？</p>
+    <div class="table-wrap">
+      <table class="calendar">
+        <thead><tr><th scope="col">方法</th><th scope="col">第 1 次</th><th scope="col">第 2 次</th><th scope="col">第 3 次</th><th scope="col">第 4 次</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">舊方法：照固定倍數拉長</th><td>1 天</td><td>3 天</td><td>8 天</td><td>20 天</td></tr>
+          <tr class="fsrs"><th scope="row">澆澆（FSRS）</th><td>2 天</td><td>11 天</td><td>46 天</td><td>163 天</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">數字來自「かなの日本語」單字卡實際使用的設定（目標記得九成、最長 365 天）。舊方法是它原本用的 SM-2 簡化版。</p>
+    <p>你會發現：熟的字，澆澆會讓你<b>很久都不用再看</b>，省下來的時間就可以拿去照顧挑剔的花，或種新的花（學新單字）。</p>
+  </section>
+
+  <section aria-labelledby="why-title">
+    <h2 id="why-title">所以這對你有什麼好處？</h2>
+    <ul class="plain">
+      <li>每天要複習的卡變少，但記得的一樣多。</li>
+      <li>容易忘的字會常常出現，已經很熟的字不會一直來煩你。</li>
+      <li>不用自己記哪天該複習什麼，打開 App 照著做就好。</li>
+    </ul>
+    <h3 style="margin-top:22px">哪些東西適合交給澆澆？</h3>
+    <ul class="plain">
+      <li>👍 一問一答、看到就要想得起來的：外語單字、漢字讀音、考試名詞、程式指令、地名和年份。</li>
+      <li>👎 要靠練習才會的：講話流不流利、寫作文、解數學題。這些要多做，不是多背。</li>
+      <li>👎 下禮拜就要考試的臨時抱佛腳：澆澆是幫你「記很久」，不是「這幾天塞進去」。</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="adult-title">
+    <h2 id="adult-title">給大人的小抄</h2>
+    <p>上面的比喻對應到 FSRS 真正的名詞與算法。想深入再打開。</p>
+    <details>
+      <summary>比喻 ↔ 正式名詞</summary>
+      <div class="inside">
+        <table>
+          <thead><tr><th scope="col">比喻</th><th scope="col">FSRS 名詞</th><th scope="col">意思</th></tr></thead>
+          <tbody>
+            <tr><td>土有多濕</td><td>Retrievability（R）</td><td>現在能想起來的機率，隨時間下降</td></tr>
+            <tr><td>能撐幾天</td><td>Stability（S）</td><td>R 從 100% 降到 90% 需要的天數</td></tr>
+            <tr><td>多挑剔</td><td>Difficulty（D）</td><td>1～10，越大每次答對後 S 長得越少</td></tr>
+            <tr><td>九成濕就澆</td><td>Desired retention</td><td>目標記憶率，常用 0.9</td></tr>
+            <tr><td>記得／還不會</td><td>Good／Again</td><td>FSRS 另外還有 Hard、Easy，兩鍵也能用</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <details>
+      <summary>遺忘曲線與下次間隔</summary>
+      <div class="inside">
+        <p>FSRS-6 的遺忘曲線是冪函數（比指數函數在長時間下降得慢）：</p>
+        <code class="formula">R(t, S) = (1 + F · t / S)<sup>−d</sup>，F = 0.9<sup>−1/d</sup> − 1</code>
+        <p>t 是距離上次複習的天數，d 是衰減參數（預設約 0.154）。F 的設計讓 t = S 時 R 剛好是 0.9。下次間隔就是「R 降到目標記憶率 r」那天：</p>
+        <code class="formula">I = S / F · (r<sup>−1/d</sup> − 1)</code>
+        <p>所以 r = 0.9 時 I = S。目標記憶率調得越高，間隔越短、每天複習量越大；調低則相反。本頁的互動花盆就是用這條曲線算的。</p>
+      </div>
+    </details>
+    <details>
+      <summary>答對、答錯時 S 和 D 怎麼變</summary>
+      <div class="inside">
+        <ul class="plain">
+          <li><b>答對</b>：S 變大。成長倍數在三種情況下比較大：D 低（好記）、S 還小（越熟長得越慢，會飽和）、R 低（拖比較久才答對，記憶被強化得更多）。</li>
+          <li><b>答錯</b>：S 掉到一個「忘記後的穩定度」，跟原本的 S、D、R 有關，不會歸零；D 上升。</li>
+          <li><b>同一天再複習</b>：FSRS-5 起有短期記憶的公式，同一天多看幾次也會微調 S。</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>參數、和舊方法的差別、出處</summary>
+      <div class="inside">
+        <ul class="plain">
+          <li>FSRS-6 有 21 個參數，預設值由大量使用者的作答紀錄訓練出來；有逐次作答紀錄時，可以用自己的資料再最佳化。</li>
+          <li>舊的 SM-2 用「上次間隔 × 固定倍數」，不估計記得的機率；FSRS 會預測每張卡現在的 R，排程依據是預測，不是固定公式。</li>
+          <li>社群常說 FSRS 在同樣記憶率下能少掉一部分複習量（常見說法是兩到三成）；實際多少取決於你的卡片和作答習慣。</li>
+          <li>FSRS 由 open-spaced-repetition 開源社群維護，Anki 從 23.10 版起內建。程式實作與文件：<a href="https://github.com/open-spaced-repetition">github.com/open-spaced-repetition</a>（本頁的數字用其 TypeScript 版 <a href="https://github.com/open-spaced-repetition/ts-fsrs">ts-fsrs</a> 的預設參數計算）。</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    <p>Learning Atlas · HTML 教學。比喻與插圖為本站自行繪製。<a href="../">回到 Learning Atlas</a></p>
+  </footer>
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="pot-base">
+      <path d="M32 92 H88 L82 116 H38 Z" fill="#a04a2a"/>
+      <rect x="28" y="86" width="64" height="8" fill="#b85d38"/>
+      <ellipse cx="60" cy="90" rx="30" ry="4" fill="#5a3d2b"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function () {
+  // FSRS-6 預設的衰減參數（ts-fsrs 預設 w[20]）；F 讓 t = S 時 R 剛好是 0.9
+  var DECAY = 0.1542;
+  var FACTOR = Math.pow(0.9, -1 / DECAY) - 1;
+  function retrievability(days, stability) {
+    return Math.pow(1 + FACTOR * days / stability, -DECAY);
+  }
+
+  var slider = document.getElementById('days');
+  var daysOut = document.getElementById('days-out');
+  var rOut = document.getElementById('r-out');
+  var say = document.getElementById('say');
+  var fill = document.getElementById('meter-fill');
+  var soil = document.getElementById('soil');
+  var leafL = document.getElementById('leaf-l');
+  var leafR = document.getElementById('leaf-r');
+  var stem = document.getElementById('stem');
+  var flower = document.getElementById('flower');
+  var core = document.getElementById('flower-core');
+
+  function stability() {
+    var checked = document.querySelector('input[name="plant"]:checked');
+    return Number(checked ? checked.value : 2);
+  }
+
+  function mix(a, b, t) {
+    var pa = [parseInt(a.slice(1, 3), 16), parseInt(a.slice(3, 5), 16), parseInt(a.slice(5, 7), 16)];
+    var pb = [parseInt(b.slice(1, 3), 16), parseInt(b.slice(3, 5), 16), parseInt(b.slice(5, 7), 16)];
+    return 'rgb(' + pa.map(function (v, i) { return Math.round(v + (pb[i] - v) * t); }).join(',') + ')';
+  }
+
+  function render() {
+    var s = stability();
+    var t = Number(slider.value);
+    var r = retrievability(t, s);
+    var pct = Math.round(r * 100);
+    daysOut.textContent = String(t);
+    rOut.textContent = pct + '%';
+    fill.style.width = pct + '%';
+
+    // 濕度 1 → 0.5 之間畫出由濕到乾、由挺到垂
+    var dry = Math.min(1, Math.max(0, (1 - r) / 0.5));
+    soil.setAttribute('fill', mix('#5a3d2b', '#c9a77c', dry));
+    leafL.setAttribute('transform', 'rotate(' + (-20 + dry * 70) + ' 96 96)');
+    leafR.setAttribute('transform', 'rotate(' + (20 - dry * 70) + ' 104 88)');
+    var bend = dry * 38;
+    stem.setAttribute('d', 'M100 126 Q' + (100 + bend * 0.4) + ' 92 ' + (100 + bend) + ' ' + (56 + bend * 0.5));
+    flower.setAttribute('cx', String(100 + bend));
+    flower.setAttribute('cy', String(52 + bend * 0.6));
+    core.setAttribute('cx', String(100 + bend));
+    core.setAttribute('cy', String(52 + bend * 0.6));
+    flower.setAttribute('fill', mix('#e7a5a0', '#b9a28c', dry));
+    leafL.setAttribute('fill', mix('#5f8d45', '#a39a5c', dry));
+    leafR.setAttribute('fill', mix('#5f8d45', '#a39a5c', dry));
+
+    var message;
+    if (t === 0) message = '剛澆完水，濕答答的！';
+    else if (r > 0.9) message = '還很濕，不用澆。現在複習有點浪費時間。';
+    else if (r >= 0.88) message = '差不多九成濕：就是今天！澆澆會在這天叫你複習。';
+    else if (r > 0.75) message = '有點乾了，該澆了。現在複習還想得起來，而且會記得更牢。';
+    else message = '好乾！這時候很可能已經想不起來，按「還不會」也沒關係，澆澆會再照顧它。';
+    say.textContent = message + '（這盆花撐 ' + s + ' 天）';
+  }
+
+  slider.addEventListener('input', render);
+  document.getElementById('plant-choice').addEventListener('change', render);
+  render();
+})();
+</script>
+</body>
+</html>

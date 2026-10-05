@@ -5,7 +5,7 @@
 <script src="https://harbor-1wk.pages.dev/embed/maintenance.js" data-project="learning-hub"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f1ecde">
-<meta name="description" content="五條平行的學習路線：軟體工程、Guardrail、AI Agent、AWS 與程式語言，每條都是可以動手操作的繁體中文互動教材。">
+<meta name="description" content="五條平行的學習路線：軟體工程、Guardrail、AI Agent、AWS 與程式語言，每條都是可以動手操作的繁體中文互動教材；另有單頁 HTML 教學。">
 <title>Learning Atlas</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231b4b5a'/%3E%3Cpath d='M16 22h32M16 32h32M16 42h20' stroke='%23f1ecde' stroke-width='5' stroke-linecap='square'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,6 +288,10 @@ footer p { margin: 0; }
       <a href="#aws"><span>04</span>雲端 · AWS</a>
       <a href="#lang"><span>05</span>程式語言</a>
     </nav>
+    <p class="nav-label">教學 / LESSONS</p>
+    <nav id="lesson-nav">
+      <a href="#lessons"><span>A</span>HTML 教學</a>
+    </nav>
     <div class="sidebar-foot">
       <p>五條路線互不相依，可以從任何一條開始。</p>
       <a href="https://github.com/frobel0520">github.com/frobel0520 ↗</a>
@@ -299,7 +303,7 @@ footer p { margin: 0; }
     <header class="topbar">
       <button class="menu-button" id="menu" type="button" aria-label="開啟選單" aria-expanded="false" aria-controls="sidebar">☰</button>
       <div class="breadcrumb"><span>ATLAS</span><i>/</i><b>MAP</b></div>
-      <div class="top-status"><span>5 ROUTES</span><i aria-hidden="true">·</i><span>7 SITES</span></div>
+      <div class="top-status"><span>5 ROUTES</span><i aria-hidden="true">·</i><span>7 SITES</span><i aria-hidden="true">·</i><span>1 LESSON</span></div>
     </header>
 
     <main class="page">
@@ -440,6 +444,24 @@ footer p { margin: 0; }
         </li>
       </ul>
 
+      <div class="section-heading" id="lessons">
+        <p class="kicker">LESSONS / HTML 教學</p>
+        <h2>單頁 HTML 教學</h2>
+        <p>一頁讀完的小教材，直接放在 Atlas 裡，不需要另外開站。</p>
+      </div>
+
+      <ul class="labs lessons">
+        <li class="lab">
+          <h3>FSRS：聰明的澆花小幫手</h3>
+          <p>用照顧小花園的比喻，五分鐘看懂單字卡 App 怎麼決定哪天該複習哪張卡；附可以拉拉看的遺忘曲線，以及給大人的公式小抄。</p>
+          <ul class="tags"><li>FSRS</li><li>間隔重複</li><li>ELI5</li></ul>
+          <span class="status">線上可直接閱讀 · 約 5 分鐘</span>
+          <div class="links">
+            <a class="button" href="lessons/fsrs.html">開啟教學<span aria-hidden="true">→</span></a>
+          </div>
+        </li>
+      </ul>
+
       <footer>
         <p>所有網站都是靜態頁面，部署在 GitHub Pages；原始碼公開於 <a href="https://github.com/frobel0520">github.com/frobel0520</a>。</p>
       </footer>
@@ -461,7 +483,7 @@ footer p { margin: 0; }
   sidebar.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
 
-  var links = Array.prototype.slice.call(document.querySelectorAll('#route-nav a'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('#route-nav a, #lesson-nav a'));
   if (!('IntersectionObserver' in window)) return;
   var byId = {};
   links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
