@@ -23,8 +23,11 @@ https://frobel0520.github.io/learning-atlas/
 | 教學 | 網址 | 檔案 |
 | --- | --- | --- |
 | FSRS：聰明的澆花小幫手（ELI5，約 5 分鐘） | [lessons/fsrs.html](https://frobel0520.github.io/learning-atlas/lessons/fsrs.html) | `lessons/fsrs.html` |
+| 請求的一生：一個 HTTPS 請求的全程（11 章，約 2.5 小時） | [lessons/request-journey.html](https://frobel0520.github.io/learning-atlas/lessons/request-journey.html) | `lessons/request-journey.html` |
 
-每份教學是一個獨立的 HTML 檔（樣式、互動都寫在同一個檔案裡，不需要建置），沿用本站的配色與字型；比喻與插圖自行撰寫、繪製。新增教學時，在 `index.html` 的「HTML 教學」區塊加一張卡片，並更新上表與頁首的 LESSON 數。
+每份教學是一個獨立的 HTML 檔（樣式、互動都寫在同一個檔案裡，不需要建置），沿用本站的配色與字型；比喻與插圖自行撰寫、繪製。
+
+「請求的一生」另外從 cdnjs 載入 React 18.3.1 與 sql.js 1.14.2（SQLite 的 asm.js 版本，不需要 WebAssembly）；連不到 cdnjs 時，React 與資料庫實驗會顯示提示，其他章節照常。頁面裡的 FastAPI 模擬器和真實 FastAPI 0.142.2 / Pydantic 2.13.5 / Python 3.14 比對過 73 個請求；Nginx 的 location 比對、proxy_pass 改寫與負載平衡依官方文件與原始碼實作，沒有接真的 Nginx 執行。新增教學時，在 `index.html` 的「HTML 教學」區塊加一張卡片，並更新上表與頁首的 LESSON 數。
 
 ## 主要功能／內容
 
