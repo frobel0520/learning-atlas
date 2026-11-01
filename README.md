@@ -57,6 +57,8 @@ Repository 根目錄未見授權檔；此 README 不另行宣告使用或再散�
 
 單一靜態 `index.html`，不需要建置。GitHub Pages 以專案站台發布在 `https://frobel0520.github.io/learning-atlas/`；在 Settings → Pages 選 `main` 分支、`/` 根目錄即可。頁面裡的連結都是完整網址，改 repo 名稱不影響各路線網站。
 
+每個 HTML 的 `<head>` 有 meta CSP（Harbor 部署手冊 2.2）。inline `<script>` 以 SHA-256 雜湊放行，**改動 inline script 後要重算雜湊並更新該頁的 CSP**，否則腳本會被瀏覽器擋下；新增外部腳本或字型來源時也要加進 CSP。
+
 新增路線：在 `index.html` 的 `.routes` 清單加一個 `<li class="route">`（左邊 `.route-head`、右邊 `.route-body`），並更新上表與側欄 `#route-nav` 的連結。同一條路線有多個網站時，比照「程式語言」卡片，在卡片裡用 `.labs` 清單列出。
 
 ## 視覺設計
