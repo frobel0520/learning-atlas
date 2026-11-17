@@ -1,6 +1,6 @@
 # 進度
 
-## 目前狀態（2026-11-14）
+## 目前狀態（2026-11-17）
 
 - 里程碑 1（文件）：完成。ADR-001～004 全部定案（ADR-002、ADR-004 於 2026-11-04 由使用者確認）。
 - 里程碑 2（網站骨架）：完成，PR #1 於 2026-11-05 合併。
@@ -20,18 +20,12 @@
   - PR #6 於 2026-11-08 合併並部署（main `5cd02b9`）。
   - 效能（本機）：LCP p95 ≤ 1,359 ms、CLS 0、TBT 0，單元頁最大 10.4 KB（`docs/evidence/perf-20261108-m00-m01-tech.md`）。
   - 效能（正式網址）：第 2 輪全部通過（首頁 LCP p95 2,066 ms），作答回饋 p95 ≤ 14.6 ms；第 1 輪首頁 p95 3,091 ms 未過，超標的是部署後第一次請求，列為已知限制（`docs/evidence/perf-20261108-production.md`）。
-- 里程碑 4（模組 2、3，批次 2）：10 個單元（m02-u01～u05、m03-u01～u05）與兩頁速查表（`frontend-cheatsheet.md`、`api-cheatsheet.md`）已完成，全部 `status: draft`。
-  - 驗證：`npm run check` 通過（內容驗證 17／30，錯誤 0、警告 0）；E2E 34 個通過；10 個新單元頁在 375 px 寬沒有水平捲動，10 張架構圖已目視檢查。
-  - 來源：m02-u05（web.dev）與 m03-u03（graphql.org、grpc.io）已對照官方文件，查證日期記在單元的 `sources`。
-  - 合併與部署：PR #12 已合併進 `main`（`a94f79d`）並部署上線（Run `43220859313`）。
-  - 待驗收：正式網址 Lighthouse 效能與作答回饋還沒量（2026-11-14 雲端沙盒網路受限無法連線 `workers.dev`），需於本機補量。
-- 里程碑 4（模組 4、5，批次 3）：9 個單元（m04-u01～u04、m05-u01～u05）與兩頁速查表（`backend-cheatsheet.md`、`database-cheatsheet.md`）已完成，全部 `status: draft`。
-  - 驗證：PR #13 CI（Run `43581970665`）通過（內容驗證 26／30，錯誤 0、警告 0；88 個單元測試、34 個 E2E、建置 37 頁）。
-  - 合併與部署：PR #13 已合併進 `main`（`47543f3`）並部署上線（Run `43582389099`）。
-- 里程碑 4（模組 6，批次 4）：4 個單元（m06-u01～u04）與速查表（`scaling-cheatsheet.md`）已完成，全課 30／30 個單元與 6 頁速查表已齊全，全部 `status: draft`。
-  - 驗證：PR #14 CI（Run `43582798457`）通過（內容驗證 30／30，錯誤 0、警告 0；88 個單元測試、34 個 E2E、建置 41 頁）；PR #15 架構微調合併後（`efdcc19`，Run `43585361171`）最大單元頁 `12.1 KB`（JS `3.2 KB`）、作答回饋 p95 `12.4 ms`。
-  - 合併與部署：PR #14（`d146f97`、Run `43583615888`）與 PR #15（`efdcc19`、Run `43585361171`）已合併進 `main` 並部署上線。
-  - 效能（正式網址，2026-11-14）：Lighthouse mobile 各 10 次全部通過——首頁 LCP p95 `1,545 ms`、模組頁 `1,262 ms`、單元頁 `1,260 ms`、CLS 全部 `0.000`、TBT p95 ≤ `79 ms`（見 `docs/evidence/perf-20261114-production.md`）。
+- 里程碑 4（模組 2～6）：全課 30／30 個單元與 6 頁速查表已合併部署，全部 `status: draft`，等使用者審閱。
+  - 批次 2（模組 2、3）：10 個單元與 `frontend-cheatsheet.md`、`api-cheatsheet.md`。`npm run check` 通過（內容驗證 17／30）；E2E 34 個通過；10 張架構圖已在 375 px 寬目視檢查。m02-u05（web.dev）與 m03-u03（graphql.org、grpc.io）已對照官方文件，查證日期記在單元的 `sources`。PR #12 合併（`a94f79d`）並部署（Run `43220859313`）。
+  - 批次 3（模組 4、5）：9 個單元與 `backend-cheatsheet.md`、`database-cheatsheet.md`。CI 通過（Run `43581970665`，內容驗證 26／30；建置 37 頁）。PR #13 合併（`47543f3`）並部署（Run `43582389099`）。
+  - 批次 4（模組 6）：4 個單元與 `scaling-cheatsheet.md`。CI 通過（Run `43582798457`，內容驗證 30／30；建置 41 頁）。PR #14 合併（`d146f97`）並部署（Run `43583615888`）。
+  - 架構微調：PR #15 合併（`efdcc19`）並部署（Run `43585361171`）；最大單元頁 `12.1 KB`（JS `3.2 KB`）、作答回饋 p95 `12.4 ms`。
+  - 效能（正式網址，2026-11-14，涵蓋批次 2～4）：Lighthouse mobile 各 10 次全部通過，首頁 LCP p95 `1,545 ms`、模組頁 `1,262 ms`、單元頁 `1,260 ms`，CLS 全部 `0.000`，TBT p95 ≤ `79 ms`（見 `docs/evidence/perf-20261114-production.md`）。
 - PWA（2026-11-08）：manifest、192／512／maskable 與 apple-touch 圖示；`npm run build` 後產生 `dist/sw.js`，預先快取全部頁面與資源，頁面先連網路、失敗才用快取。驗證：88 個單元測試、E2E 34 個通過（含離線開單元頁）；本機預覽確認 service worker 啟用、CSP 含 `worker-src`。
 - 寫作時注意：案例設定只用 `docs/curriculum.md` 第 4 節；SVG 寬 360、只用 d-* class；不寫產品或雲端服務名稱，除非附來源。
 
