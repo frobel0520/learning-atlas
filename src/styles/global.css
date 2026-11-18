@@ -100,6 +100,9 @@ button:focus-visible {
 }
 
 .site-name {
+	display: inline-flex;
+	align-items: center;
+	min-height: 40px;
 	font-weight: 700;
 	color: var(--text);
 	text-decoration: none;
@@ -107,9 +110,12 @@ button:focus-visible {
 }
 
 .site-header nav a:not(.site-name) {
+	display: inline-flex;
+	align-items: center;
+	min-height: 40px;
+	padding: 0.25rem 0.5rem;
 	color: var(--muted);
 	text-decoration: none;
-	padding: 0.5rem 0;
 }
 
 .site-header nav a[aria-current="page"] {
@@ -299,6 +305,23 @@ h3 {
 	border-collapse: collapse;
 	margin: 1rem 0;
 	font-size: 0.9375rem;
+	/* 捲動陰影：還有欄位在畫面外時，左右邊緣出現淡陰影；捲到底就消失 */
+	background:
+		linear-gradient(to right, var(--bg) 30%, transparent) left / 2rem 100% no-repeat local,
+		linear-gradient(to left, var(--bg) 30%, transparent) right / 2rem 100% no-repeat local,
+		radial-gradient(farthest-side at 0 50%, rgb(0 0 0 / 0.18), transparent) left / 0.75rem 100% no-repeat scroll,
+		radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / 0.18), transparent) right / 0.75rem 100% no-repeat scroll;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
 }
 
 .prose th,

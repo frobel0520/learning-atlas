@@ -14,7 +14,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "validate:content": "node scripts/validate-content.ts",
-    "audit": "npm audit --audit-level=high",
+    "audit": "node scripts/audit-gate.mjs npm",
     "check": "npm run typecheck && npm run lint && npm run test && npm run validate:content && npm run audit",
     "perf:bundle": "node scripts/check-budget.ts dist",
     "e2e": "playwright test"
