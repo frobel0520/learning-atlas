@@ -31,7 +31,7 @@ jobs:
 
           SITES=()
           for s in software-engineering-workshop road-to-solution-architect guardrail-workshop AI-Agent-Tutorial aws-lab typescript-lab golang-lab; do
-            if printf '%s\n' "$CHANGED" | grep -q "^sites/$s/"; then
+            if grep -q "^sites/$s/" <<< "$CHANGED"; then
               SITES+=("$s")
             fi
           done
@@ -43,7 +43,7 @@ jobs:
             echo "npm_sites=$JSON" >> "$GITHUB_OUTPUT"
           fi
 
-          if printf '%s\n' "$CHANGED" | grep -q "^sites/fastapi-learning-lab/"; then
+          if grep -q "^sites/fastapi-learning-lab/" <<< "$CHANGED"; then
             echo "fastapi=true" >> "$GITHUB_OUTPUT"
           else
             echo "fastapi=false" >> "$GITHUB_OUTPUT"
