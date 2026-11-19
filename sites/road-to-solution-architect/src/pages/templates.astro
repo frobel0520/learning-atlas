@@ -1,0 +1,42 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { moduleLabel } from "../lib/site-data.ts";
+
+const templates = (await getCollection("templates")).sort((a, b) => a.data.module - b.data.module);
+---
+
+<Base title="速查表" current="templates" description="每個模組一頁的技術選擇速查表範本與 Example Retail 範例。">
+	<div class="prose">
+		<h1>技術選擇速查表</h1>
+		<p>每個模組一頁：整理模組裡每項技術的用途、什麼時候選、代價。範本可以複製成 Markdown，貼到你自己的筆記裡整理；網站不收集任何內容。</p>
+	</div>
+	{
+		templates.length === 0 ? (
+			<p class="card">速查表製作中，會隨模組內容一起上線。</p>
+		) : (
+			<ol class="card-list">
+				{templates.map((template) => (
+					<li class="card" data-template>
+						<h2>{template.data.title}</h2>
+						<p class="card-meta">
+							<span>{moduleLabel(template.data.module)}</span>
+						</p>
+						<p>{template.data.summary}</p>
+						<pre class="template-source" data-template-source>{template.body?.trim()}</pre>
+						<p>
+							<button class="button secondary" type="button" data-copy>
+								複製 Markdown
+							</button>
+							<span role="status" data-copy-status />
+						</p>
+					</li>
+				))}
+			</ol>
+		)
+	}
+</Base>
+
+<script>
+	import "../scripts/templates.ts";
+</script>
