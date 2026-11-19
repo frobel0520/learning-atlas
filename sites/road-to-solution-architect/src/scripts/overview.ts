@@ -1,4 +1,5 @@
 // 首頁與模組頁：標出已完成的單元、各模組完成數，以及「繼續上次閱讀」。
+import { withBase } from "../lib/base-url.ts";
 import { isComplete, type Progress } from "../progress/model.ts";
 import { openProgress } from "./progress-client.ts";
 
@@ -27,7 +28,7 @@ function render(progress: Progress): void {
 	// 只接受本站已上線的單元，標題從頁面上已知的清單取，不用 storage 裡的字串組 HTML。
 	const known = lastId ? document.querySelector<HTMLElement>(`[data-unit-row="${CSS.escape(lastId)}"] [data-unit-title]`) : null;
 	if (resume && resumeBox && lastId && known) {
-		resume.href = `/units/${lastId}/`;
+		resume.href = withBase(`units/${lastId}/`);
 		resume.textContent = known.textContent ?? lastId;
 		resumeBox.hidden = false;
 	}

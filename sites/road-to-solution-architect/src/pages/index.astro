@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { withBase } from "../lib/base-url.ts";
 import { loadModules, moduleLabel } from "../lib/site-data.ts";
 
 const modules = await loadModules();
@@ -13,10 +14,10 @@ const lookup = modules.flatMap((module) => module.units.filter((unit) => unit.en
 		<h1>SWE Trial</h1>
 		<p>
 			軟體工程技術導覽：每項技術講清楚是什麼、解決什麼問題、什麼時候用。不寫程式，每個單元 8～12
-			分鐘，手機和電腦都能讀，整門課用同一家虛構企業 <a href="/case/">Example Retail</a> 當案例。
+			分鐘，手機和電腦都能讀，整門課用同一家虛構企業 <a href={withBase("case/")}>Example Retail</a> 當案例。
 		</p>
 		<p class="progress-summary" data-progress-summary={published.join(",")}>已上線 {published.length}／{total} 個單元</p>
-		<p id="resume" hidden>繼續上次閱讀：<a id="resume-link" href="/">—</a></p>
+		<p id="resume" hidden>繼續上次閱讀：<a id="resume-link" href={withBase("")}>—</a></p>
 	</section>
 
 	<h2>學習路線</h2>
@@ -26,7 +27,7 @@ const lookup = modules.flatMap((module) => module.units.filter((unit) => unit.en
 			modules.map((module) => (
 				<li class="card">
 					<h3>
-						<a href={`/modules/${module.id}/`}>
+						<a href={withBase(`modules/${module.id}/`)}>
 							{moduleLabel(module.number)}　{module.title}
 						</a>
 					</h3>

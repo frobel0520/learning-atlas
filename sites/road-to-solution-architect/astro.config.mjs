@@ -1,7 +1,8 @@
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-	site: "https://road-to-solution-architect.curio-lab.workers.dev",
+	site: process.env.ASTRO_SITE ?? "https://frobel0520.github.io",
+	base: process.env.ASTRO_BASE ?? "/",
 	outDir: process.env.RTSA_OUT_DIR ?? "dist",
 	trailingSlash: "always",
 	build: {

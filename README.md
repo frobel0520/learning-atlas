@@ -1,22 +1,21 @@
 # Learning Atlas
 
-> 串連五條平行學習路線的入口頁。每個學習網站都是獨立的 repo 與 GitHub Pages 網站，這裡只放連結、不收納它們的內容；另外有一區「HTML 教學」，放一頁讀完的小教材（`lessons/`），直接由本站提供。
+> 整合五條平行學習路線與 8 座互動教材站的 monorepo，統一部署在 GitHub Pages（`https://frobel0520.github.io/learning-atlas/`）；另外有一區「HTML 教學」，放一頁讀完的小教材（`lessons/`），直接由本站提供。
 
 ## 概覽
 
 https://frobel0520.github.io/learning-atlas/
 
-
-
-| 路線 | 網站 | Repo |
+| 路線 | 網站 | 目錄 |
 | --- | --- | --- |
-| 軟體工程 | [Software Engineering Workshop](https://frobel0520.github.io/software-engineering-workshop/) | [software-engineering-workshop](https://github.com/frobel0520/software-engineering-workshop) |
-| AI 安全 | [Guardrail Workshop](https://frobel0520.github.io/guardrail-workshop/) | [guardrail-workshop](https://github.com/frobel0520/guardrail-workshop) |
-| AI Agent | [AI Agent Tutorial](https://frobel0520.github.io/AI-Agent-Tutorial/) | [AI-Agent-Tutorial](https://github.com/frobel0520/AI-Agent-Tutorial) |
-| 雲端 · AWS | [AWS Lab](https://frobel0520.github.io/aws-lab/) | [aws-lab](https://github.com/frobel0520/aws-lab) |
-| 程式語言 | [TypeScript Lab](https://frobel0520.github.io/typescript-lab/) | [typescript-lab](https://github.com/frobel0520/typescript-lab) |
-| 程式語言 | [Go Lab](https://frobel0520.github.io/golang-lab/) | [golang-lab](https://github.com/frobel0520/golang-lab) |
-| 程式語言 | [FastAPI Learning Lab](https://frobel0520.github.io/fastapi-learning-lab/) | [fastapi-learning-lab](https://github.com/frobel0520/fastapi-learning-lab) |
+| 軟體工程 | [Software Engineering Workshop](https://frobel0520.github.io/learning-atlas/software-engineering-workshop/) | `sites/software-engineering-workshop/` |
+| 軟體工程 | [SWE Trial（技術導覽）](https://frobel0520.github.io/learning-atlas/road-to-solution-architect/) | `sites/road-to-solution-architect/` |
+| AI 安全 | [Guardrail Workshop](https://frobel0520.github.io/learning-atlas/guardrail-workshop/) | `sites/guardrail-workshop/` |
+| AI Agent | [AI Agent Tutorial](https://frobel0520.github.io/learning-atlas/AI-Agent-Tutorial/) | `sites/AI-Agent-Tutorial/` |
+| 雲端 · AWS | [AWS Lab](https://frobel0520.github.io/learning-atlas/aws-lab/) | `sites/aws-lab/` |
+| 程式語言 | [TypeScript Lab](https://frobel0520.github.io/learning-atlas/typescript-lab/) | `sites/typescript-lab/` |
+| 程式語言 | [Go Lab](https://frobel0520.github.io/learning-atlas/golang-lab/) | `sites/golang-lab/` |
+| 程式語言 | [FastAPI Learning Lab](https://frobel0520.github.io/learning-atlas/fastapi-learning-lab/) | `sites/fastapi-learning-lab/` |
 
 ## HTML 教學
 
@@ -31,23 +30,22 @@ https://frobel0520.github.io/learning-atlas/
 
 ## 主要功能／內容
 
-串連軟體工程、AI 安全、AI Agent、AWS 與程式語言學習網站的入口頁；各站有獨立 repository。「HTML 教學」區塊收錄單頁教材。
+串連並收納軟體工程、AI 安全、AI Agent、AWS 與程式語言共 8 座互動學習網站（以 `git subtree` 保留完整歷史合併至 `sites/`）；「HTML 教學」區塊收錄單頁教材。
 
 ## 現況與已知限制
 
-入口頁列出的各站由獨立 repository 維護；各站進度與限制以對應專案 README 為準。
+各子站保留各自獨立的 `package.json` / 建置工具與 README，細部開發與本機後端執行方式請參閱對應 `sites/<name>/README.md`。
 
 ## 授權與來源
 
-Repository 根目錄未見授權檔；此 README 不另行宣告使用或再散布權利。
+Repository 根目錄未見授權檔；此 README 不另行宣告使用或再散布權利（部分子目錄含有個別 `LICENSE`）。
 
 ---
 
 ## 主站與子站導覽
 
-- Learning Atlas 是學習網站的總入口；各課程維持自己的 repository、網址與部署流程。
-- 子站在現有導覽中提供返回 Learning Atlas 的連結；其他課程由總入口選擇，不複製課程內容。
-- 新增或停用子站時，同時更新上表、`index.html` 的路線卡片與可用狀態文字，並檢查雙向連結。
+- Learning Atlas 是學習網站的總入口與 monorepo 主體；8 座子站統一部署在 `/learning-atlas/<site>/`。
+- 新增或停用子站時，同時更新上表、`index.html` 的路線卡片與 `.github/workflows/pages-deploy.yml`。
 
 ## Harbor 整合
 
@@ -55,7 +53,9 @@ Repository 根目錄未見授權檔；此 README 不另行宣告使用或再散�
 
 ## 部署
 
-單一靜態 `index.html`，不需要建置。GitHub Pages 以專案站台發布在 `https://frobel0520.github.io/learning-atlas/`；在 Settings → Pages 選 `main` 分支、`/` 根目錄即可。頁面裡的連結都是完整網址，改 repo 名稱不影響各路線網站。
+透過 `.github/workflows/pages-deploy.yml` 並行建置 8 座子站並與根目錄入口頁組裝為 `_site/`，統一發布至 GitHub Pages（`https://frobel0520.github.io/learning-atlas/`）。
+
+> 若需啟用 `AI-Agent-Tutorial` 的線上 Supabase 連線，請於本 repo Settings → Secrets and variables → Actions → Variables 設定 `SUPABASE_FUNCTION_URL`、`SUPABASE_PROJECT_URL`、`SUPABASE_PUBLISHABLE_KEY`。
 
 每個 HTML 的 `<head>` 有 meta CSP（Harbor 部署手冊 2.2）。inline `<script>` 以 SHA-256 雜湊放行，**改動 inline script 後要重算雜湊並更新該頁的 CSP**，否則腳本會被瀏覽器擋下；新增外部腳本或字型來源時也要加進 CSP。
 

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type { CollectionEntry } from "astro:content";
 import Base from "../../layouts/Base.astro";
+import { withBase } from "../../lib/base-url.ts";
 import { loadModules, moduleLabel } from "../../lib/site-data.ts";
 import { inlineDiagrams, insertQuiz, renderQuizHtml } from "../../lib/unit-html.ts";
 
@@ -46,7 +47,7 @@ const body = insertQuiz(
 	<article data-unit={unit.id} data-complete="false">
 		<header class="unit-header prose">
 			<p class="muted">
-				<a href={`/modules/${moduleId}/`}>{moduleLabel(moduleNumber)}　{moduleTitle}</a> ／ 第 {unit.order} 單元
+				<a href={withBase(`modules/${moduleId}/`)}>{moduleLabel(moduleNumber)}　{moduleTitle}</a> ／ 第 {unit.order} 單元
 			</p>
 			<h1>{unit.title}</h1>
 			<p class="card-meta">
@@ -87,8 +88,8 @@ const body = insertQuiz(
 		</div>
 
 		<nav class="unit-nav" aria-label="上一個與下一個單元">
-			{previous ? <a href={`/units/${previous.id}/`}>← {previous.title}</a> : <span />}
-			{next ? <a href={`/units/${next.id}/`}>{next.title} →</a> : <a href="/">回到學習路線</a>}
+			{previous ? <a href={withBase(`units/${previous.id}/`)}>← {previous.title}</a> : <span />}
+			{next ? <a href={withBase(`units/${next.id}/`)}>{next.title} →</a> : <a href={withBase("")}>回到學習路線</a>}
 		</nav>
 	</article>
 </Base>

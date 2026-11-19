@@ -1,38 +1,173 @@
 name: Deploy GitHub Pages
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: read
+
 concurrency:
   group: pages
   cancel-in-progress: false
+
 jobs:
-  build:
+  build-npm-sites:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: software-engineering-workshop
+            workdir: sites/software-engineering-workshop/frontend
+            dist: sites/software-engineering-workshop/frontend/dist
+            base_env: VITE_BASE
+          - name: road-to-solution-architect
+            workdir: sites/road-to-solution-architect
+            dist: sites/road-to-solution-architect/dist
+            base_env: ASTRO_BASE
+          - name: guardrail-workshop
+            workdir: sites/guardrail-workshop/frontend
+            dist: sites/guardrail-workshop/frontend/dist
+            base_env: VITE_BASE
+          - name: AI-Agent-Tutorial
+            workdir: sites/AI-Agent-Tutorial/frontend
+            dist: sites/AI-Agent-Tutorial/frontend/dist
+            base_env: VITE_BASE
+          - name: aws-lab
+            workdir: sites/aws-lab/frontend
+            dist: sites/aws-lab/frontend/dist
+            base_env: VITE_BASE
+          - name: typescript-lab
+            workdir: sites/typescript-lab
+            dist: sites/typescript-lab/dist
+            base_env: VITE_BASE_PATH
+          - name: golang-lab
+            workdir: sites/golang-lab
+            dist: sites/golang-lab/dist
+            base_env: VITE_BASE_PATH
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Stage static site
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ matrix.workdir }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.workdir }}
+        run: npm ci
+
+      - name: Prepare AI-Agent-Tutorial env
+        if: matrix.name == 'AI-Agent-Tutorial'
+        env:
+          SUPABASE_FUNCTION_URL: ${{ vars.SUPABASE_FUNCTION_URL }}
+          SUPABASE_PROJECT_URL: ${{ vars.SUPABASE_PROJECT_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+        working-directory: ${{ matrix.workdir }}
+        run: |
+          printf 'VITE_API_BASE_URL=%s\nVITE_SUPABASE_URL=%s\nVITE_SUPABASE_PUBLISHABLE_KEY=%s\n' \
+            "$SUPABASE_FUNCTION_URL" "$SUPABASE_PROJECT_URL" "$SUPABASE_PUBLISHABLE_KEY" > .env.production
+
+      - name: Build ${{ matrix.name }}
+        working-directory: ${{ matrix.workdir }}
+        env:
+          BASE_VALUE: /${{ github.event.repository.name }}/${{ matrix.name }}/
+        run: |
+          export ${{ matrix.base_env }}="$BASE_VALUE"
+          npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-${{ matrix.name }}
+          path: ${{ matrix.dist }}
+          retention-days: 1
+
+  build-fastapi-lab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: sites/fastapi-learning-lab/pnpm-lock.yaml
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: sites/fastapi-learning-lab/apps/api/pyproject.toml
+
+      - name: Build fastapi-learning-lab (static Pyodide)
+        working-directory: sites/fastapi-learning-lab
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/fastapi-learning-lab/
+        run: |
+          uv pip install --system -e apps/api
+          pnpm install --frozen-lockfile
+          pnpm build:web:static
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-fastapi-learning-lab
+          path: sites/fastapi-learning-lab/apps/web/dist
+          retention-days: 1
+
+  assemble:
+    needs: [build-npm-sites, build-fastapi-lab]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Stage portal root
         run: |
           mkdir -p _site
-          rsync -a \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='docs' \
-            --exclude='artifacts' \
-            --exclude='AGENTS.md' \
-            --exclude='CLAUDE.md' \
-            --exclude='README.md' \
-            --exclude='_site' \
-            ./ _site/
-      - uses: actions/upload-pages-artifact@v4
+          cp index.html 404.html _site/
+          cp -r lessons _site/lessons
+          touch _site/.nojekyll
+
+      - name: Download built sites
+        uses: actions/download-artifact@v4
+        with:
+          pattern: site-*
+          path: _artifacts
+
+      - name: Assemble subpaths
+        run: |
+          for dir in _artifacts/site-*; do
+            name="${dir#_artifacts/site-}"
+            mkdir -p "_site/$name"
+            cp -r "$dir"/. "_site/$name/"
+          done
+          ls -la _site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
   deploy:
-    needs: build
+    needs: assemble
     runs-on: ubuntu-latest
     permissions:
       pages: write

@@ -17,7 +17,8 @@ const files: BuiltFile[] = listFiles(dist).map((full) => ({
 	path: relative(dist, full).split(sep).join("/"),
 	content: readFileSync(full),
 }));
-const urls = precacheUrls(files);
+const base = process.env.ASTRO_BASE ?? "/";
+const urls = precacheUrls(files, base);
 const version = cacheVersion(files);
 writeFileSync(join(dist, "sw.js"), renderServiceWorker(readFileSync("scripts/sw-template.js", "utf8"), version, urls));
 console.log(`service worker：版本 ${version}，預先快取 ${urls.length} 個網址 → ${join(dist, "sw.js")}`);

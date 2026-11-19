@@ -12,18 +12,19 @@ export interface BuiltFile {
 const EXCLUDED = new Set(["_headers", "sw.js", "404.html"]);
 
 /** 把輸出檔案路徑換成瀏覽器請求的網址：index.html 換成目錄網址。 */
-export function toUrl(path: string): string {
-	if (path === "index.html") return "/";
-	if (path.endsWith("/index.html")) return `/${path.slice(0, -"index.html".length)}`;
-	return `/${path}`;
+export function toUrl(path: string, base = "/"): string {
+	const prefix = base.endsWith("/") ? base : `${base}/`;
+	if (path === "index.html") return prefix;
+	if (path.endsWith("/index.html")) return `${prefix}${path.slice(0, -"index.html".length)}`;
+	return `${prefix}${path}`;
 }
 
 /** 預先快取清單：所有頁面、Astro 輸出的資源、圖示與 manifest。依網址排序，結果固定。 */
-export function precacheUrls(files: BuiltFile[]): string[] {
+export function precacheUrls(files: BuiltFile[], base = "/"): string[] {
 	return files
 		.map((file) => file.path)
 		.filter((path) => !EXCLUDED.has(path) && !path.startsWith("."))
-		.map(toUrl)
+		.map((path) => toUrl(path, base))
 		.sort();
 }
 
