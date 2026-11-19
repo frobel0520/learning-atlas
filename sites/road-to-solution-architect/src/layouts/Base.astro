@@ -1,0 +1,49 @@
+---
+import "../styles/global.css";
+import { withBase } from "../lib/base-url.ts";
+
+interface Props {
+	title: string;
+	description?: string;
+	current?: "home" | "case" | "templates";
+}
+
+const { title, description = "軟體工程技術導覽：看懂常見技術是什麼、什麼時候用。", current } = Astro.props;
+const siteName = "SWE Trial";
+const pageTitle = title === siteName ? siteName : `${title}｜${siteName}`;
+---
+
+<!doctype html>
+<html lang="zh-Hant-TW">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
+		<link rel="manifest" href={withBase("manifest.webmanifest")} />
+		<link rel="apple-touch-icon" href={withBase("apple-touch-icon.png")} />
+		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#1f5fae" />
+		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151514" />
+		<title>{pageTitle}</title>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">跳到主要內容</a>
+		<header class="site-header">
+			<nav aria-label="主選單">
+				<a class="site-name" href={withBase("")} aria-current={current === "home" ? "page" : undefined}>{siteName}</a>
+				<a href={withBase("case/")} aria-current={current === "case" ? "page" : undefined}>Example Retail</a>
+				<a href={withBase("templates/")} aria-current={current === "templates" ? "page" : undefined}>速查表</a>
+			</nav>
+		</header>
+		<div id="progress-banner" class="banner" role="status" hidden></div>
+		<main id="main">
+			<slot />
+		</main>
+		<footer class="site-footer">
+			<p>學習進度只存在這個瀏覽器。清除瀏覽器資料或使用無痕模式時，進度不會保留。</p>
+		</footer>
+		<script>
+			import "../scripts/pwa.ts";
+		</script>
+	</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "road-to-solution-architect",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/build-sw.ts dist",
+    "build:fixture": "node scripts/build-fixture.ts",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "lint": "oxlint",
+    "test": "vitest run",
+    "validate:content": "node scripts/validate-content.ts",
+    "audit": "node scripts/audit-gate.mjs npm",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run validate:content && npm run audit",
+    "perf:bundle": "node scripts/check-budget.ts dist",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "astro": "7.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@playwright/test": "1.64.1",
+    "@types/node": "22.19.1",
+    "oxlint": "1.76.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.12",
+    "yaml": "2.9.1"
+  }
+}

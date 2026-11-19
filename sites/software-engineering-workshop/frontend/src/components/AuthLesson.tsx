@@ -1,0 +1,46 @@
+import { authFields, demoConfig } from "../content/auth";
+import { TopicOrientation } from "./TopicShell";
+import type { LessonOrientation } from "../topics/types";
+
+export function AuthLesson({ completed, onOpenLab, orientation }: { completed: boolean; onOpenLab: () => void; orientation: LessonOrientation }) {
+  return (
+    <div className="page auth-page course-lesson-page">
+      <header className="lesson-hero auth-hero">
+        <div>
+          <h1>Auth：把信任<br /><em>接到正確的位置</em></h1>
+          <p>Entra ID 是服務，OIDC 是協定，SSO 是結果。</p>
+        </div>
+        <div className="auth-hero-actions">
+          <div className={`module-status ${completed ? "done" : ""}`}><span>{completed ? "✓" : "09"}</span><div><b>{completed ? "已完成" : "學習中"}</b></div></div>
+          <a className="button auth-deck-link" href={`${import.meta.env.BASE_URL}entra-oidc-sso-deck.html`}>開啟簡報 <span>→</span></a>
+        </div>
+      </header>
+
+      <TopicOrientation orientation={orientation} showMeta={false} />
+
+      <section className="auth-model" aria-label="OIDC 設定關係">
+        <div className="auth-node"><small>DIRECTORY</small><strong>Tenant ID</strong><code>{demoConfig.tenantId}</code></div>
+        <i>→</i>
+        <div className="auth-node active"><small>APPLICATION</small><strong>Client ID</strong><code>{demoConfig.clientId}</code></div>
+        <i>→</i>
+        <div className="auth-node"><small>CALLBACK</small><strong>Redirect URI</strong><code>{demoConfig.redirectUri}</code></div>
+      </section>
+
+      <section className="auth-field-list">
+        {authFields.map(([name, question, answer], index) => (
+          <article key={name}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h2>{name}</h2>
+            <p>{question}</p>
+            <b>{answer}</b>
+          </article>
+        ))}
+      </section>
+
+      <section className="lab-cta">
+        <div><h2>把七個值放回登入流程。</h2></div>
+        <button className="button light" onClick={onOpenLab}>進入 Auth Lab <span>→</span></button>
+      </section>
+    </div>
+  );
+}

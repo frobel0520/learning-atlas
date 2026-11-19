@@ -304,7 +304,7 @@ footer p { margin: 0; }
     <header class="topbar">
       <button class="menu-button" id="menu" type="button" aria-label="開啟選單" aria-expanded="false" aria-controls="sidebar">☰</button>
       <div class="breadcrumb"><span>ATLAS</span><i>/</i><b>MAP</b></div>
-      <div class="top-status"><span>5 ROUTES</span><i aria-hidden="true">·</i><span>7 SITES</span><i aria-hidden="true">·</i><span>2 LESSONS</span></div>
+      <div class="top-status"><span>5 ROUTES</span><i aria-hidden="true">·</i><span>8 SITES</span><i aria-hidden="true">·</i><span>2 LESSONS</span></div>
     </header>
 
     <main class="page">
@@ -324,14 +324,14 @@ footer p { margin: 0; }
           <div class="route-lines">
             <i style="--at: 18%"></i><i style="--at: 46%"></i><i style="--at: 72%"></i><i style="--at: 30%"></i><i style="--at: 58%"></i>
           </div>
-          <div class="visual-footer"><span>07 SITES</span><b>OPEN</b></div>
+          <div class="visual-footer"><span>08 SITES</span><b>OPEN</b></div>
         </div>
       </section>
 
       <div class="section-heading" id="routes">
         <p class="kicker">ROUTES / 路線</p>
         <h2>五條路線，任選一條開始</h2>
-        <p>每個網站都是獨立的 repo 與部署，這裡只放連結。</p>
+        <p>所有互動教材收錄於同一座 monorepo，統一部署於本站子路徑。</p>
       </div>
 
       <ul class="routes">
@@ -339,16 +339,31 @@ footer p { margin: 0; }
           <div class="route-head">
             <span class="route-no">01</span>
             <span class="route-kind">軟體工程</span>
-            <h2>Software Engineering Workshop</h2>
+            <h2>軟體工程與技術導覽</h2>
           </div>
           <div class="route-body">
-            <p>19 個核心主題，從開發基本功到交付部署；每個主題都有教材，以及在瀏覽器內執行的模擬實驗。</p>
-            <ul class="tags"><li>Git</li><li>REST API</li><li>資料庫</li><li>測試</li><li>Docker</li><li>CI/CD</li><li>部署</li></ul>
-            <span class="status">線上可直接使用</span>
-            <div class="links">
-              <a class="button" href="https://frobel0520.github.io/software-engineering-workshop/">開啟網站<span aria-hidden="true">→</span></a>
-              <a href="https://github.com/frobel0520/software-engineering-workshop">GitHub ↗</a>
-            </div>
+            <p>從基礎技術觀念導覽到動手實作的完整軟體工程路線。</p>
+            <ul class="tags"><li>Git</li><li>REST API</li><li>資料庫</li><li>測試</li><li>Docker</li><li>CI/CD</li><li>系統架構</li></ul>
+            <ul class="labs">
+              <li class="lab">
+                <h3>Software Engineering Workshop</h3>
+                <p>19 個核心主題，從開發基本功到交付部署；每個主題都有教材，以及在瀏覽器內執行的模擬實驗。</p>
+                <span class="status">線上可直接使用</span>
+                <div class="links">
+                  <a class="button" href="software-engineering-workshop/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/software-engineering-workshop">原始碼 ↗</a>
+                </div>
+              </li>
+              <li class="lab">
+                <h3>SWE Trial（技術導覽）</h3>
+                <p>不寫程式的軟體工程技術導覽：以虛構企業案例介紹常見技術是什麼、解決什麼問題與何時選用。</p>
+                <span class="status">線上可直接使用 · 支援離線閱讀</span>
+                <div class="links">
+                  <a class="button" href="road-to-solution-architect/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/road-to-solution-architect">原始碼 ↗</a>
+                </div>
+              </li>
+            </ul>
           </div>
         </li>
 
@@ -363,8 +378,8 @@ footer p { margin: 0; }
             <ul class="tags"><li>Guardrails</li><li>Prompt injection</li><li>PII</li><li>FastAPI</li></ul>
             <span class="status">教材與實驗場線上可用；後端服務需在本機執行</span>
             <div class="links">
-              <a class="button" href="https://frobel0520.github.io/guardrail-workshop/">開啟網站<span aria-hidden="true">→</span></a>
-              <a href="https://github.com/frobel0520/guardrail-workshop">GitHub ↗</a>
+              <a class="button" href="guardrail-workshop/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/guardrail-workshop">原始碼 ↗</a>
             </div>
           </div>
         </li>
@@ -380,8 +395,8 @@ footer p { margin: 0; }
             <ul class="tags"><li>LangChain</li><li>RAG</li><li>WebHook</li><li>Dify</li></ul>
             <span class="status warn">線上 API 已停用，網站只剩前端畫面；完整功能請依 README 在本機執行</span>
             <div class="links">
-              <a class="button" href="https://frobel0520.github.io/AI-Agent-Tutorial/">開啟網站<span aria-hidden="true">→</span></a>
-              <a href="https://github.com/frobel0520/AI-Agent-Tutorial">GitHub ↗</a>
+              <a class="button" href="AI-Agent-Tutorial/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/AI-Agent-Tutorial">原始碼 ↗</a>
             </div>
           </div>
         </li>
@@ -397,8 +412,8 @@ footer p { margin: 0; }
             <ul class="tags"><li>Bedrock</li><li>Converse API</li><li>Guardrails</li><li>IAM</li><li>CloudFront</li><li>Lambda</li><li>OIDC</li></ul>
             <span class="status">線上可直接使用</span>
             <div class="links">
-              <a class="button" href="https://frobel0520.github.io/aws-lab/">開啟網站<span aria-hidden="true">→</span></a>
-              <a href="https://github.com/frobel0520/aws-lab">GitHub ↗</a>
+              <a class="button" href="aws-lab/">開啟網站<span aria-hidden="true">→</span></a>
+              <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/aws-lab">原始碼 ↗</a>
             </div>
           </div>
         </li>
@@ -418,8 +433,8 @@ footer p { margin: 0; }
                 <p>10 章 40 題，對照 C++、C#、Python；型別檢查與執行測試都在瀏覽器內完成。</p>
                 <span class="status">線上可直接使用</span>
                 <div class="links">
-                  <a class="button" href="https://frobel0520.github.io/typescript-lab/">開啟網站<span aria-hidden="true">→</span></a>
-                  <a href="https://github.com/frobel0520/typescript-lab">GitHub ↗</a>
+                  <a class="button" href="typescript-lab/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/typescript-lab">原始碼 ↗</a>
                 </div>
               </li>
               <li class="lab">
@@ -427,8 +442,8 @@ footer p { margin: 0; }
                 <p>10 章 40 題，Monaco 編輯器與語言對照；練習直接送到 Go 官方編譯服務執行與測試。</p>
                 <span class="status">線上可直接使用</span>
                 <div class="links">
-                  <a class="button" href="https://frobel0520.github.io/golang-lab/">開啟網站<span aria-hidden="true">→</span></a>
-                  <a href="https://github.com/frobel0520/golang-lab">GitHub ↗</a>
+                  <a class="button" href="golang-lab/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/golang-lab">原始碼 ↗</a>
                 </div>
               </li>
               <li class="lab">
@@ -436,8 +451,8 @@ footer p { margin: 0; }
                 <p>14 個模組、111 堂課，依官方 Learn 導覽編排；練習在瀏覽器內以 Pyodide 執行並自動檢查。</p>
                 <span class="status">線上可直接使用；需支援 WebAssembly JSPI 的瀏覽器，已在 Chrome 驗證</span>
                 <div class="links">
-                  <a class="button" href="https://frobel0520.github.io/fastapi-learning-lab/">開啟網站<span aria-hidden="true">→</span></a>
-                  <a href="https://github.com/frobel0520/fastapi-learning-lab">GitHub ↗</a>
+                  <a class="button" href="fastapi-learning-lab/">開啟網站<span aria-hidden="true">→</span></a>
+                  <a href="https://github.com/frobel0520/learning-atlas/tree/main/sites/fastapi-learning-lab">原始碼 ↗</a>
                 </div>
               </li>
             </ul>

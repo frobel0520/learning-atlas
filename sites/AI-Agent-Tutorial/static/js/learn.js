@@ -1,0 +1,574 @@
+const configuredApiBase = String(window.APP_CONFIG?.apiBaseUrl || "").trim();
+const isLocalDevelopment = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_BASE = (configuredApiBase || (isLocalDevelopment ? window.location.origin : ""))
+  .replace(/\/$/, "");
+const API_DOCS_URL = "https://github.com/frobel0520/AI-Agent-Tutorial/tree/main/docs";
+const OWN_WEBHOOK_PATH = "/hooks/incoming";
+const SUPABASE_URL = String(window.APP_CONFIG?.supabaseUrl || "").trim();
+const SUPABASE_PUBLISHABLE_KEY = String(window.APP_CONFIG?.supabasePublishableKey || "").trim();
+const authClient = SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY && window.supabase?.createClient
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: { autoRefreshToken: true, detectSessionInUrl: true, persistSession: true },
+    })
+  : null;
+
+let currentSession = null;
+let latestHealth = null;
+let difyAccessState = { authenticated: false, authorized: false };
+let difyAccessError = "";
+
+const statusBanner = document.getElementById("statusBanner");
+const providerCallout = document.getElementById("providerCallout");
+const mockExplain = document.getElementById("mockExplain");
+const difyExplain = document.getElementById("difyExplain");
+const difyAuthExplain = document.getElementById("difyAuthExplain");
+const difySubmitBtn = document.getElementById("difySubmitBtn");
+const ownWebhookEndpoint = document.getElementById("ownWebhookEndpoint");
+const useOwnWebhookBtn = document.getElementById("useOwnWebhookBtn");
+const authStatus = document.getElementById("authStatus");
+const authAvatar = document.getElementById("authAvatar");
+const googleSignInBtn = document.getElementById("googleSignInBtn");
+const signOutBtn = document.getElementById("signOutBtn");
+const connectionPill = document.getElementById("connectionPill");
+const connectionStatus = document.getElementById("connectionStatus");
+const sidebarHealth = document.getElementById("sidebarHealth");
+const activeSectionLabel = document.getElementById("activeSectionLabel");
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+const stepLinks = Array.from(document.querySelectorAll(".step-link"));
+const stepSections = stepLinks
+  .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
+  .filter(({ section }) => section);
+
+function setConnectionState(state, label) {
+  if (connectionPill) {
+    connectionPill.classList.toggle("is-loading", state === "loading");
+    connectionPill.classList.toggle("is-error", state === "error");
+  }
+  if (connectionStatus) {
+    connectionStatus.textContent = label;
+  }
+}
+
+function setSidebarHealth(state, label) {
+  if (!sidebarHealth) {
+    return;
+  }
+  sidebarHealth.classList.toggle("is-error", state === "error");
+  const detail = sidebarHealth.querySelector("small");
+  if (detail) {
+    detail.textContent = label;
+  }
+}
+
+function setActiveStep(link) {
+  if (!link) {
+    return;
+  }
+  stepLinks.forEach((item) => {
+    const isActive = item === link;
+    item.classList.toggle("active", isActive);
+    if (isActive) {
+      item.setAttribute("aria-current", "step");
+    } else {
+      item.removeAttribute("aria-current");
+    }
+  });
+  if (activeSectionLabel) {
+    activeSectionLabel.textContent = link.querySelector(".step-title")?.textContent || link.textContent.trim();
+  }
+}
+
+function syncActiveStepToViewport() {
+  if (!stepSections.length) {
+    return;
+  }
+  const readingAnchor = Math.min(280, Math.max(120, window.innerHeight * 0.28));
+  let current = stepSections[0];
+  stepSections.forEach((item) => {
+    if (item.section.getBoundingClientRect().top <= readingAnchor) {
+      current = item;
+    }
+  });
+  setActiveStep(current.link);
+}
+
+function closeSidebar() {
+  document.body.classList.remove("sidebar-open");
+  mobileMenuBtn?.setAttribute("aria-expanded", "false");
+  sidebarBackdrop?.classList.add("hidden");
+}
+
+function toggleSidebar() {
+  const willOpen = !document.body.classList.contains("sidebar-open");
+  document.body.classList.toggle("sidebar-open", willOpen);
+  mobileMenuBtn?.setAttribute("aria-expanded", String(willOpen));
+  sidebarBackdrop?.classList.toggle("hidden", !willOpen);
+}
+
+function showBanner(message, isError = false) {
+  statusBanner.textContent = message;
+  statusBanner.classList.toggle("error", isError);
+  statusBanner.classList.remove("hidden");
+}
+
+async function api(path, options = {}) {
+  if (!API_BASE || API_BASE === "null") {
+    throw new Error("尚未設定 Supabase Edge Function URL。請檢查 static/js/config.js 或 GitHub Pages repository variable。");
+  }
+
+  const { headers: optionHeaders = {}, ...requestOptions } = options;
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...requestOptions,
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getAuthHeaders()),
+      ...optionHeaders,
+    },
+  });
+
+  const text = await response.text();
+  let data = text;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
+
+  if (!response.ok) {
+    const detail = typeof data === "object" && data?.detail ? JSON.stringify(data.detail) : text;
+    throw new Error(`${response.status} ${response.statusText}: ${detail}`);
+  }
+  return data;
+}
+
+function renderNotes(container, notes) {
+  container.innerHTML = "";
+  if (!notes?.length) {
+    container.innerHTML = "<p class='lead'>目前沒有筆記。請先在上方建立一筆。</p>";
+    return;
+  }
+  notes.forEach((note) => {
+    const card = document.createElement("article");
+    card.className = "note-card";
+    card.innerHTML = `<h3>#${note.id} ${escapeHtml(note.title)}</h3><p>${escapeHtml(note.content)}</p>`;
+    container.appendChild(card);
+  });
+}
+
+function renderSources(container, sources) {
+  container.innerHTML = "";
+  if (!sources?.length) {
+    container.innerHTML = "<p class='lead'>沒有檢索到來源筆記。請先建立相關內容的筆記，或調整問題。</p>";
+    return;
+  }
+  sources.forEach((note) => {
+    const card = document.createElement("article");
+    card.className = "note-card";
+    card.innerHTML = `<h3>來源 #${note.id} ${escapeHtml(note.title)}</h3><p>${escapeHtml(note.content)}</p>`;
+    container.appendChild(card);
+  });
+}
+
+function renderEvents(container, events) {
+  container.innerHTML = "";
+  if (!events?.length) {
+    container.innerHTML = "<p class='lead'>尚無事件。請先註冊 WebHook 並觸發 note/ask。</p>";
+    return;
+  }
+  events.forEach((event) => {
+    const card = document.createElement("article");
+    card.className = "event-card";
+    card.innerHTML = `<h3>${escapeHtml(event.event_type)} · #${event.id}</h3><p>${escapeHtml(event.payload)}</p>`;
+    container.appendChild(card);
+  });
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function prettyJson(value) {
+  return JSON.stringify(value, null, 2);
+}
+
+function absoluteUrl(value, fallback) {
+  try {
+    return new URL(value || fallback, API_BASE).href;
+  } catch {
+    return fallback;
+  }
+}
+
+async function getAuthHeaders() {
+  if (!authClient) {
+    return {};
+  }
+  const { data, error } = await authClient.auth.getSession();
+  if (error) {
+    throw error;
+  }
+  currentSession = data.session;
+  return currentSession?.access_token
+    ? { Authorization: `Bearer ${currentSession.access_token}` }
+    : {};
+}
+
+function updateDifyUi() {
+  const difyConfigured = Boolean(latestHealth?.dify_configured);
+  if (difySubmitBtn) {
+    difySubmitBtn.disabled = !(difyConfigured && difyAccessState.authorized);
+  }
+  if (!difyAuthExplain) {
+    return;
+  }
+  if (!authClient) {
+    difyAuthExplain.innerHTML = "<strong>Google 登入尚未設定</strong>，請完成 Supabase Auth 與 GitHub Pages 設定。";
+  } else if (!difyAccessState.authenticated) {
+    difyAuthExplain.innerHTML = "<strong>請先使用 Google 登入</strong>。訪客不能呼叫 Dify。";
+  } else if (!difyAccessState.authorized) {
+    difyAuthExplain.innerHTML = "<strong>已登入，但尚未取得 Dify 授權</strong>。請由管理者把你的帳號加入授權名單。";
+  } else if (!difyConfigured) {
+    difyAuthExplain.innerHTML = "<strong>帳號已授權</strong>，但 Dify 尚未完成 API 設定。";
+  } else {
+    difyAuthExplain.innerHTML = "<strong>已登入且已授權</strong>，現在可以呼叫 Dify。";
+  }
+  if (difyAccessError && difyAuthExplain) {
+    difyAuthExplain.insertAdjacentHTML("beforeend", `<br /><small>${escapeHtml(difyAccessError)}</small>`);
+  }
+}
+
+function renderAuthState(session) {
+  currentSession = session;
+  if (!authClient) {
+    if (authStatus) authStatus.textContent = "Google 登入尚未設定";
+    if (authAvatar) authAvatar.textContent = "?";
+    if (googleSignInBtn) googleSignInBtn.disabled = true;
+    if (signOutBtn) signOutBtn.hidden = true;
+    updateDifyUi();
+    return;
+  }
+  const user = session?.user;
+  if (user) {
+    if (authAvatar) authAvatar.textContent = (user.email || "G").trim().charAt(0).toUpperCase() || "G";
+    if (authStatus) authStatus.textContent = `已登入：${user.email || "Google 帳號"}`;
+    if (googleSignInBtn) googleSignInBtn.hidden = true;
+    if (signOutBtn) signOutBtn.hidden = false;
+  } else {
+    if (authAvatar) authAvatar.textContent = "?";
+    if (authStatus) authStatus.textContent = "尚未登入";
+    if (googleSignInBtn) {
+      googleSignInBtn.hidden = false;
+      googleSignInBtn.disabled = false;
+    }
+    if (signOutBtn) signOutBtn.hidden = true;
+  }
+  updateDifyUi();
+}
+
+async function refreshDifyAccess() {
+  difyAccessError = "";
+  if (!currentSession) {
+    difyAccessState = { authenticated: false, authorized: false };
+    updateDifyUi();
+    return;
+  }
+  try {
+    const access = await api("/dify/access");
+    difyAccessState = {
+      authenticated: access.authenticated === true,
+      authorized: access.authorized === true,
+    };
+  } catch (error) {
+    difyAccessState = { authenticated: true, authorized: false };
+    difyAccessError = `授權狀態讀取失敗：${error.message}`;
+  }
+  updateDifyUi();
+}
+
+async function initAuth() {
+  renderAuthState(null);
+  if (!authClient) {
+    return;
+  }
+  const { data, error } = await authClient.auth.getSession();
+  if (error) {
+    throw error;
+  }
+  renderAuthState(data.session);
+  await refreshDifyAccess();
+  authClient.auth.onAuthStateChange((_event, session) => {
+    renderAuthState(session);
+    window.setTimeout(() => {
+      refreshDifyAccess().catch(() => {
+        /* the next user action will retry the access check */
+      });
+    }, 0);
+  });
+}
+
+async function loadHealth() {
+  setConnectionState("loading", "檢查中…");
+  setSidebarHealth("loading", "正在檢查 API…");
+  try {
+    const health = await api("/health");
+    const docsUrl = absoluteUrl(health.docs_url, API_DOCS_URL);
+    const storageMessage = health.persistent_data
+      ? "（Supabase 持久化已啟用）"
+      : "（目前使用本機儲存）";
+    providerCallout.innerHTML = `
+      <strong>連線 OK</strong> · 服務：<code>${escapeHtml(health.app_name)}</code>
+      · LLM 模式：<code>${escapeHtml(health.llm_provider)}</code>
+      · 資料儲存：<code>${escapeHtml(health.storage)}</code>
+      ${storageMessage}
+      · API 文件：<a href="${escapeHtml(docsUrl)}" target="_blank" rel="noreferrer">開啟教學文件</a>
+    `;
+    mockExplain.innerHTML = `
+      目前 LLM 模式：<strong>${escapeHtml(health.llm_provider)}</strong>。
+      ${
+        health.llm_provider === "mock"
+          ? "你會看到 <code>[Mock LLM]</code> 開頭的回答；請重點觀察 <code>sources</code> 是否正確。"
+          : health.llm_provider === "ollama"
+            ? health.llm_ready
+              ? `Ollama 已就緒（模型 <code>${escapeHtml(health.ollama_model || "unknown")}</code>）。回答應為自然語句，且仍有 <code>sources</code>。`
+              : "Ollama 尚未就緒。請在本機執行 <code>docker compose up -d ollama</code> 並 <code>ollama pull llama3.2</code>。詳見 deploy/ollama-setup.md"
+            : health.llm_provider === "gemini"
+              ? health.llm_ready
+                ? "Gemini 雲端 LLM 已就緒。回答應為自然語句（實境教學），且仍有 <code>sources</code>。"
+                : "Gemini 尚未設定。請在 Supabase Edge Function Secrets 設定 <code>GOOGLE_API_KEY</code> 與 <code>GEMINI_MODEL</code>。"
+              : health.llm_provider === "groq"
+                ? health.llm_ready
+                  ? "Groq 雲端 LLM 已就緒。回答應為自然語句（實境教學），且仍有 <code>sources</code>（本模式的檢索用簡易向量，非語意搜尋）。"
+                  : "Groq 尚未設定。請在 Supabase Edge Function Secrets 設定 <code>GROQ_API_KEY</code>。"
+                : "你應會看到較自然的 LLM 回答；仍請確認 <code>sources</code>。"
+      }
+    `;
+    latestHealth = health;
+    setConnectionState("online", "連線 OK");
+    setSidebarHealth("online", `${health.llm_provider || "API"} · ${health.storage || "服務正常"}`);
+    if (difyExplain) {
+      difyExplain.innerHTML = health.dify_configured
+        ? "<strong>Dify API 已設定</strong>。仍需 Google 登入並取得授權才能呼叫。"
+        : "<strong>Step 4 尚未設定</strong>，請先在 Supabase Secrets 設定 Dify Cloud API。";
+    }
+    updateDifyUi();
+    showBanner("已連線到後端 API，可以開始 Step 1。");
+  } catch (error) {
+    latestHealth = null;
+    setConnectionState("error", "連線失敗");
+    setSidebarHealth("error", "請檢查部署設定");
+    updateDifyUi();
+    providerCallout.innerHTML = `<strong>連線失敗</strong>：${escapeHtml(error.message)}。請確認 Supabase Edge Function 已部署，且 Pages 的 <code>SUPABASE_FUNCTION_URL</code> 已設定。`;
+    showBanner(`無法連線：${error.message}`, true);
+  }
+}
+
+async function loadNotes() {
+  const notes = await api("/notes");
+  renderNotes(document.getElementById("notesList"), notes);
+  return notes;
+}
+
+document.getElementById("refreshHealthBtn").addEventListener("click", loadHealth);
+
+googleSignInBtn?.addEventListener("click", async () => {
+  if (!authClient) {
+    showBanner("Google 登入尚未設定。", true);
+    return;
+  }
+  googleSignInBtn.disabled = true;
+  try {
+    const { error } = await authClient.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
+    });
+    if (error) throw error;
+  } catch (error) {
+    googleSignInBtn.disabled = false;
+    showBanner(`Google 登入失敗：${error.message}`, true);
+  }
+});
+
+signOutBtn?.addEventListener("click", async () => {
+  if (!authClient) return;
+  const { error } = await authClient.auth.signOut();
+  if (error) {
+    showBanner(`登出失敗：${error.message}`, true);
+    return;
+  }
+  showBanner("已登出 Google 帳號。");
+});
+
+document.getElementById("noteForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const title = document.getElementById("noteTitle").value.trim();
+  const content = document.getElementById("noteContent").value.trim();
+  const resultBox = document.getElementById("noteResult");
+
+  try {
+    const created = await api("/notes", {
+      method: "POST",
+      body: JSON.stringify({ title, content }),
+    });
+    resultBox.textContent = prettyJson(created);
+    await loadNotes();
+    showBanner(`筆記建立成功（id=${created.id}）。下一步到 Step 2 提問。`);
+  } catch (error) {
+    resultBox.textContent = error.message;
+    showBanner(error.message, true);
+  }
+});
+
+document.getElementById("loadNotesBtn").addEventListener("click", async () => {
+  try {
+    await loadNotes();
+    showBanner("筆記列表已更新。");
+  } catch (error) {
+    showBanner(error.message, true);
+  }
+});
+
+document.getElementById("askForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const question = document.getElementById("questionInput").value.trim();
+  const top_k = Number(document.getElementById("topKInput").value || 3);
+  const askResult = document.getElementById("askResult");
+
+  try {
+    const answer = await api("/ask", {
+      method: "POST",
+      body: JSON.stringify({ question, top_k }),
+    });
+    askResult.textContent = prettyJson(answer);
+    renderSources(document.getElementById("sourcesList"), answer.sources);
+    showBanner(`問答完成（provider=${answer.provider}，sources=${answer.sources?.length ?? 0}）。`);
+  } catch (error) {
+    askResult.textContent = error.message;
+    showBanner(error.message, true);
+  }
+});
+
+document.getElementById("sampleAskBtn").addEventListener("click", () => {
+  document.getElementById("questionInput").value = "LangChain 是什麼？";
+  document.getElementById("topKInput").value = "3";
+});
+
+document.getElementById("webhookForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const url = document.getElementById("webhookUrl").value.trim();
+  const event_types = document.getElementById("eventTypes").value.trim() || "*";
+  const webhookResult = document.getElementById("webhookResult");
+
+  try {
+    const created = await api("/webhooks", {
+      method: "POST",
+      body: JSON.stringify({ url, event_types }),
+    });
+    webhookResult.textContent = prettyJson(created);
+    showBanner("WebHook 註冊成功。建立筆記後即可測試事件接收。");
+  } catch (error) {
+    webhookResult.textContent = error.message;
+    showBanner(error.message, true);
+  }
+});
+
+useOwnWebhookBtn?.addEventListener("click", () => {
+  const endpoint = `${API_BASE}${OWN_WEBHOOK_PATH}`;
+  document.getElementById("webhookUrl").value = endpoint;
+  document.getElementById("eventTypes").value = "note.created,ask.completed";
+  showBanner("已填入本專案的 WebHook endpoint，請按註冊完成設定。");
+});
+
+document.getElementById("loadEventsBtn").addEventListener("click", async () => {
+  try {
+    const events = await api("/events");
+    renderEvents(document.getElementById("eventsList"), events);
+    showBanner(`已載入 ${events.length} 筆事件。`);
+  } catch (error) {
+    showBanner(error.message, true);
+  }
+});
+
+document.getElementById("difyForm")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const question = document.getElementById("difyQuestionInput").value.trim();
+  const difyResult = document.getElementById("difyResult");
+
+  try {
+    const answer = await api("/dify/ask", {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    });
+    difyResult.textContent = prettyJson(answer);
+    showBanner(`Dify 問答完成（provider=${answer.provider}）。`);
+  } catch (error) {
+    difyResult.textContent = error.message;
+    showBanner(error.message, true);
+  }
+});
+
+document.getElementById("sampleDifyBtn")?.addEventListener("click", () => {
+  document.getElementById("difyQuestionInput").value = "REST 的 GET 是做什麼？";
+});
+
+stepLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    setActiveStep(link);
+    closeSidebar();
+    window.setTimeout(syncActiveStepToViewport, 350);
+  });
+});
+
+mobileMenuBtn?.addEventListener("click", toggleSidebar);
+sidebarBackdrop?.addEventListener("click", closeSidebar);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeSidebar();
+  }
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 860) {
+    closeSidebar();
+  }
+});
+
+let scrollFrameId = 0;
+window.addEventListener(
+  "scroll",
+  () => {
+    if (scrollFrameId) {
+      return;
+    }
+    scrollFrameId = window.requestAnimationFrame(() => {
+      scrollFrameId = 0;
+      syncActiveStepToViewport();
+    });
+  },
+  { passive: true },
+);
+
+window.addEventListener("resize", syncActiveStepToViewport);
+setActiveStep(stepLinks[0]);
+
+loadHealth()
+  .then(loadNotes)
+  .catch(() => {
+    /* handled in loadHealth */
+  });
+
+initAuth().catch((error) => {
+  difyAccessError = `登入狀態初始化失敗：${error.message}`;
+  renderAuthState(null);
+});
+
+if (ownWebhookEndpoint) {
+  ownWebhookEndpoint.textContent = API_BASE
+    ? `${API_BASE}${OWN_WEBHOOK_PATH}`
+    : "尚未設定 Supabase Edge Function URL";
+}
