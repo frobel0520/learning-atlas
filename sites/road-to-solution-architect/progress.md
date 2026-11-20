@@ -42,7 +42,7 @@
 - [x] 【高】於本機量測正式網址效能（Lighthouse mobile 與作答回饋）並存到 `docs/evidence/perf-20261114-production.md`。
 - [ ] 【中】Owner 細讀模組 0～6 的 30 個 draft 單元，確認後改成 `reviewed`。2026-11-08 Owner 看過模組 0、1 的標題，同意先繼續寫。
 - [ ] 【中】PWA 手機實機驗收：2026-11-08 已實作（manifest、圖示、service worker 預先快取全部頁面、CSP 加 `worker-src`，見 `docs/03` 第 12 節），E2E 驗過離線開單元頁；還要用手機實際「加到主畫面」並開飛航模式閱讀（Owner 有空時做，2026-11-08 記為待辦）。2026-11-20 起在新網址做；手機上若有舊網址的主畫面圖示，順便確認開啟後會看到「SWE Trial 搬家了」引導頁（舊的離線快取可能要開兩次才會清掉）。
-- [ ] 【中】決定是否接 Harbor 的維護模式腳本（影響 CSP，CSP 在 `src/layouts/Base.astro`）。
+- [x] 【中】Harbor 維護模式腳本：2026-11-20 使用者決定不接。本站是純靜態內容網站，沒有臨時下架或公告的需求；接了每頁最多多隱藏 800 ms（影響 LCP 門檻），CSP 也要開放 Harbor 網域。需要下架時用回滾部署（`docs/03` 第 7 節）。
 - [x] 【低】依賴稽核原有 10 個 moderate（eslint 依賴的 minimatch）：2026-11-10 改用 Oxlint、移除 ESLint 後，`npm audit` 為 0。
 - [ ] 【低】決定第二階段的開放對象（只有擁有者，或任何 Google 帳號），以及登入同步的部署位置（共用 `github.io` 不能保存登入狀態，見 `docs/03` ADR-005）。
 
