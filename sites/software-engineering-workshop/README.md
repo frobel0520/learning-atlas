@@ -4,7 +4,7 @@
 
 ## 概覽
 
-網站：https://frobel0520.github.io/software-engineering-workshop/ （部署來源：`frobel0520/software-engineering-workshop`）
+網站：https://frobel0520.github.io/learning-atlas/software-engineering-workshop/ （部署來源：`frobel0520/learning-atlas` 的 `sites/software-engineering-workshop/`）
 
 本站是 [Learning Atlas](https://frobel0520.github.io/learning-atlas/)「軟體工程」路線，導覽有返回 Learning Atlas 的連結（2026-09-25 起）。
 

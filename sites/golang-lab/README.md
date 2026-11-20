@@ -4,7 +4,7 @@
 
 ## 概覽
 
-網站：https://frobel0520.github.io/golang-lab/ 。線上可直接編譯執行：代理 Worker 部署在 https://golang-lab-runner.curio-lab.workers.dev ，GitHub Actions repository variable `VITE_GO_RUNNER_URL` 已設定為該網址（2026-09-25）。
+網站：https://frobel0520.github.io/learning-atlas/golang-lab/ 。線上可直接編譯執行：代理 Worker 部署在 https://golang-lab-runner.curio-lab.workers.dev ，GitHub Actions repository variable `VITE_GO_RUNNER_URL` 已設定為該網址（2026-09-25）。
 
 ## 主要功能／內容
 

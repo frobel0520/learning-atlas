@@ -9,7 +9,7 @@
 把投影片變成一個**可以動手玩、也可以 clone 下來改**的教材站：11 頁課程內容、一個即時互動的
 guardrail 實驗場，加上一個真的會跑的 FastAPI 縱深防禦服務。
 
-🔗 **線上版：** https://frobel0520.github.io/guardrail-workshop/
+🔗 **線上版：** https://frobel0520.github.io/learning-atlas/guardrail-workshop/
 
 本站是 [Learning Atlas](https://frobel0520.github.io/learning-atlas/)「AI 安全」路線，站內導覽有返回 Learning Atlas 的連結（2026-09-25 起）。
 
@@ -45,7 +45,7 @@ MIT — 見 [LICENSE](LICENSE)。教材內容改寫自 `guardrail-workshop-propo
 
 ## 30 秒上手
 
-只想看教材、玩實驗場——**什麼都不用裝**，直接開[線上版](https://frobel0520.github.io/guardrail-workshop/)。
+只想看教材、玩實驗場——**什麼都不用裝**，直接開[線上版](https://frobel0520.github.io/learning-atlas/guardrail-workshop/)。
 線上版的檢查邏輯跑在你自己的瀏覽器裡，沒有任何資料送到伺服器。
 
 想跑完整的後端版本：

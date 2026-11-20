@@ -1,6 +1,6 @@
 # AWS Lab：Project Plan
 
-> 狀態：v0.2.0（Bedrock 與部署與權限兩條路線完成；網址 https://frobel0520.github.io/aws-lab/）
+> 狀態：v0.2.0（Bedrock 與部署與權限兩條路線完成；網址 https://frobel0520.github.io/learning-atlas/aws-lab/）
 > 日期：2026-09-24
 
 ## 1. 定位
