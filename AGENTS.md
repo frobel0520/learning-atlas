@@ -30,3 +30,6 @@
 - 專案級別：公開級
 <!-- END:shared-standards -->
 
+## 子站規則
+
+- 修改 `sites/<site>/` 前，先讀該目錄的 `AGENTS.md`（有的話）；子站規則只補充本檔，不取代本檔。目前有：`sites/road-to-solution-architect/AGENTS.md`。

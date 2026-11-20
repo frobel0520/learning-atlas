@@ -1,0 +1,11 @@
+# 舊網址 road-to-solution-architect.curio-lab.workers.dev 的轉址 Worker（2026-11-20）。
+# 網站已搬到 learning-atlas 的 GitHub Pages；這個 Worker 只提供 public/ 的轉址頁與 sw-kill-switch，沒有 Worker 程式。
+# 任何路徑都回 index.html（single-page-application），由 redirect.js 帶著原路徑轉到新網址。
+# 部署：.github/workflows/rtsa-legacy-redirect.yml；secret 由擁有者設在 GitHub Secrets，不寫在這裡。
+name = "road-to-solution-architect"
+compatibility_date = "2026-10-21"
+
+[assets]
+directory = "./public"
+not_found_handling = "single-page-application"
+html_handling = "auto-trailing-slash"

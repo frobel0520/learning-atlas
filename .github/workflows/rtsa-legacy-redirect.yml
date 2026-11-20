@@ -1,0 +1,67 @@
+# 舊網址 road-to-solution-architect.curio-lab.workers.dev 換成轉址頁（Worker static assets）。
+# 以 Harbor standards/deployment-templates/github-actions/deploy-worker.yml 為基礎；只在 main push（轉址檔有變動）或擁有者手動觸發時部署，PR 不會部署。
+# 需要擁有者設定 secrets CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID（與原 road-to-solution-architect repo 同一個 Cloudflare 帳號）；
+# 還沒設定時標為「待 Owner 設定」並略過，不算失敗。
+name: RTSA legacy redirect
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - sites/road-to-solution-architect/legacy-redirect/**
+      - .github/workflows/rtsa-legacy-redirect.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rtsa-legacy-redirect
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy redirect Worker
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Require owner and main
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check redirect files
+        working-directory: sites/road-to-solution-architect/legacy-redirect
+        run: |
+          test -f public/index.html
+          test -f public/sw.js
+          node --check public/redirect.js
+          node --check public/sw.js
+
+      - name: Publish Worker
+        working-directory: sites/road-to-solution-architect/legacy-redirect
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "WORKER_PUBLICATION pending-owner-secrets"
+            echo "### 待 Owner 設定 CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID，本次略過" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # wrangler 的輸出導到檔案，log 只留結果（部署手冊踩雷紀錄）。
+          if npx --yes wrangler@4.152.0 deploy --config wrangler.toml > wrangler.log 2>&1; then
+            echo "WORKER_PUBLICATION deployed"
+            echo "### 已部署轉址 Worker" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "WORKER_PUBLICATION failed"; tail -n 20 wrangler.log | grep -v -i 'token' || true; exit 1
+          fi

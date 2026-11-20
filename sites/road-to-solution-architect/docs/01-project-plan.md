@@ -8,7 +8,7 @@
 | 產品類型 | 自學課程網站 |
 | 專案級別 | 公開級（第一階段）；第二階段加入登入同步後改為產品級 |
 | 每月預算上限 | NT$0（零月費硬性規則） |
-| 版控／部署 | GitHub `frobel0520/road-to-solution-architect`／Cloudflare Worker static assets（repo 名與網址沿用舊名，不改） |
+| 版控／部署 | GitHub `frobel0520/learning-atlas` 的 `sites/road-to-solution-architect/`／GitHub Pages（2026-11-19 搬入，見 `docs/03` ADR-005；原 repo 已封存） |
 | 投入時間 | 不固定，利用零碎時間 |
 | SDLC | Planning → SA → SD／ADR → Task DAG → 開發測試 → CI／Release Gate |
 
@@ -47,7 +47,7 @@ SWE Trial 是軟體工程技術導覽的自學網站：介紹軟體工程裡常�
 - 進度：單元完成狀態、決策題作答、上次閱讀位置，存在瀏覽器（localStorage）。
 - 速查表：可以一鍵複製的 Markdown 範本與範例。
 - 版面：手機與電腦都能使用，跟隨系統的淺色／深色模式。
-- 部署：Cloudflare Worker static assets，由 GitHub Actions 從 `main` 部署。
+- 部署：learning-atlas 的 GitHub Pages，由 GitHub Actions 從 `main` 部署（2026-11-19 前為 Cloudflare Worker static assets）。
 
 ### 4.2 第二階段（產品級）
 
