@@ -1,6 +1,7 @@
 // 建置輸出的傳輸量預算（docs/03-system-design.md 第 6 節）：
 // 單元頁 HTML＋CSS＋JS（gzip）≤ 150 KB、JavaScript（gzip）≤ 30 KB，不含圖片。
 // 用法：node scripts/check-budget.ts <dist 目錄> [--json 輸出檔]
+// 子路徑建置（ASTRO_BASE，例如 /learning-atlas/road-to-solution-architect/）時，HTML 裡的資源網址帶有 base 前綴，讀檔前先去掉。
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, posix } from "node:path";
 import { gzipSync } from "node:zlib";
@@ -12,10 +13,14 @@ const dist = process.argv[2] ?? "dist";
 const jsonIndex = process.argv.indexOf("--json");
 const jsonOut = jsonIndex > -1 ? process.argv[jsonIndex + 1] : undefined;
 
+const rawBase = process.env.ASTRO_BASE ?? "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
 const gz = (path: string) => gzipSync(readFileSync(path), { level: 9 }).length;
 
 function assetPath(url: string): string {
-	return join(dist, url.replace(/^\//, ""));
+	const path = url.startsWith(base) ? url.slice(base.length) : url.replace(/^\//, "");
+	return join(dist, path);
 }
 
 /** JavaScript 模組連同它靜態 import 的 chunk 一起算。 */
