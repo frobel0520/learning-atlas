@@ -12,7 +12,7 @@
 
 ## 現況與已知限制
 
-- 網站：https://frobel0520.github.io/typescript-lab/ （2026-09-07 上線，GitHub Actions 檢查與 Pages 部署成功）
+- 網站：https://frobel0520.github.io/learning-atlas/typescript-lab/ （2026-09-07 上線，GitHub Actions 檢查與 Pages 部署成功）
 - `npm run check` 共 89 項測試，含型別檢查與 lint。
 - 屬於 [Learning Atlas](https://frobel0520.github.io/learning-atlas/)「程式語言」路線；站內導覽有返回 Learning Atlas 的連結（2026-09-25 起）。
 - `index.html` 載入 Harbor 維護腳本（`data-project="typescript-lab"`，2026-09-15 起），Harbor 連不上時頁面照常顯示。

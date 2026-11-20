@@ -4,9 +4,9 @@
 
 ## 概覽
 
-線上版：https://frobel0520.github.io/aws-lab/ （v0.2.0，兩條路線共 11 個主題已上線；進度見 [`docs/project-plan.md`](docs/project-plan.md)）
+線上版：https://frobel0520.github.io/learning-atlas/aws-lab/ （v0.2.0，兩條路線共 11 個主題已上線；進度見 [`docs/project-plan.md`](docs/project-plan.md)）
 
-AWS Lab 是學習系列中的一條路線，和 [Software Engineering Workshop](https://frobel0520.github.io/software-engineering-workshop/)、[Guardrail Workshop](https://frobel0520.github.io/guardrail-workshop/)、[AI Agent Tutorial](https://frobel0520.github.io/AI-Agent-Tutorial/) 平行，由 [Learning Atlas](https://frobel0520.github.io/learning-atlas/) 串起來。
+AWS Lab 是學習系列中的一條路線，和 [Software Engineering Workshop](https://frobel0520.github.io/learning-atlas/software-engineering-workshop/)、[Guardrail Workshop](https://frobel0520.github.io/learning-atlas/guardrail-workshop/)、[AI Agent Tutorial](https://frobel0520.github.io/learning-atlas/AI-Agent-Tutorial/) 平行，由 [Learning Atlas](https://frobel0520.github.io/learning-atlas/) 串起來。
 
 ## 主要功能／內容
 

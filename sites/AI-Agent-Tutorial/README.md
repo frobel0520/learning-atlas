@@ -8,7 +8,7 @@
 
 
 
-> ⚠️ **線上 API 已停用（2026-09-21）**：原本的 Supabase 專案已移除，[GitHub Pages 網站](https://frobel0520.github.io/AI-Agent-Tutorial/)只剩前端畫面，筆記、RAG、WebHook 與 Dify 功能在線上都無法使用。要實際練習請看下方「快速開始（本機）」。Supabase 相關程式與[部署文件](deploy/github-supabase-deploy.md)保留，供日後重建。
+> ⚠️ **線上 API 已停用（2026-09-21）**：原本的 Supabase 專案已移除，[GitHub Pages 網站](https://frobel0520.github.io/learning-atlas/AI-Agent-Tutorial/)只剩前端畫面，筆記、RAG、WebHook 與 Dify 功能在線上都無法使用。要實際練習請看下方「快速開始（本機）」。Supabase 相關程式與[部署文件](deploy/github-supabase-deploy.md)保留，供日後重建。
 
 
 

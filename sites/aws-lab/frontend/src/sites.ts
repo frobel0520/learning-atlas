@@ -5,14 +5,14 @@ export const HUB_URL: string = import.meta.env.VITE_HUB_URL ?? "https://frobel05
 export const PEER_SITES = {
   softwareEngineering: {
     title: "Software Engineering Workshop",
-    url: "https://frobel0520.github.io/software-engineering-workshop/",
+    url: "https://frobel0520.github.io/learning-atlas/software-engineering-workshop/",
   },
   guardrail: {
     title: "Guardrail Workshop",
-    url: "https://frobel0520.github.io/guardrail-workshop/",
+    url: "https://frobel0520.github.io/learning-atlas/guardrail-workshop/",
   },
   agent: {
     title: "AI Agent Tutorial",
-    url: "https://frobel0520.github.io/AI-Agent-Tutorial/",
+    url: "https://frobel0520.github.io/learning-atlas/AI-Agent-Tutorial/",
   },
 } as const;

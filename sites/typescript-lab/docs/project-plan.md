@@ -12,7 +12,7 @@
 
 參考 [software-engineering-workshop](https://github.com/frobel0520/software-engineering-workshop) 的 AGENTS.md 與 docs/project-plan.md：專案級 Pageflow → SA → SD → 任務拆解 → 可重複驗收；完成條件通過才記錄進度。功能分支使用 feature/<task-id>。
 
-GitHub delivery is complete: public repository https://github.com/frobel0520/typescript-lab and live site https://frobel0520.github.io/typescript-lab/. GitHub Actions validation, deployment, and public asset HTTP checks passed. Browser interaction QA remains pending. Previous hosting evidence is historical.
+GitHub delivery is complete: public repository https://github.com/frobel0520/typescript-lab and live site https://frobel0520.github.io/learning-atlas/typescript-lab/. GitHub Actions validation, deployment, and public asset HTTP checks passed. Browser interaction QA remains pending. Previous hosting evidence is historical.
 
 工作拆分時，邊界清楚的獨立任務優先使用 Luna 以節省 token；主 agent 負責整合、衝突處理與最終驗證，避免重複執行昂貴檢查。
 

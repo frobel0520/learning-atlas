@@ -1,6 +1,6 @@
 # 專案進度
 
-截至 2026-09-22，`typescript-lab` 是以 React、Vite 建置的靜態 TypeScript 練習站，部署目標為 GitHub Pages：<https://frobel0520.github.io/typescript-lab/>。公開 repository：<https://github.com/frobel0520/typescript-lab>。
+截至 2026-09-22，`typescript-lab` 是以 React、Vite 建置的靜態 TypeScript 練習站，部署目標為 GitHub Pages：<https://frobel0520.github.io/learning-atlas/typescript-lab/>。公開 repository：<https://github.com/frobel0520/typescript-lab>。
 
 目前核心課程包含 10 個章節、40 題練習。編輯器流程已涵蓋程式碼編輯、提示、評分／檢查、進度保存與解題進度顯示；型別與執行契約、起始碼與參考解法驗證也已完成。
 

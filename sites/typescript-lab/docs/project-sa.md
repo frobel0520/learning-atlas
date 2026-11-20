@@ -25,6 +25,6 @@
 
 ## 部署與協作約束
 
-Public GitHub Pages deployment is complete at https://frobel0520.github.io/typescript-lab/. VITE_BASE_PATH controls the /typescript-lab/ project path. Static build and deployed asset HTTP checks passed; browser interaction QA remains pending.
+Public GitHub Pages deployment is complete at https://frobel0520.github.io/learning-atlas/typescript-lab/. VITE_BASE_PATH controls the /typescript-lab/ project path. Static build and deployed asset HTTP checks passed; browser interaction QA remains pending.
 
 邊界清楚的獨立任務優先交給 Luna；主 agent 負責整合與一次性的完整驗證，避免平行工作重複消耗 token。
