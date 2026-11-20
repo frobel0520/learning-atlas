@@ -1,6 +1,6 @@
 import { defineConfig } from "@playwright/test";
 
-// E2E 跑在測試用內容（npm run build:fixture → dist-fixture），由會套用 _headers 的靜態伺服器提供。
+// E2E 跑在測試用內容（npm run build:fixture → dist-fixture），由不加安全標頭的靜態伺服器提供（同 GitHub Pages，CSP 靠每頁的 meta）。
 export default defineConfig({
 	testDir: "tests/e2e",
 	fullyParallel: true,

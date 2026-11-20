@@ -4,7 +4,7 @@
 |---|---|
 | 文件版本 | 1.0 |
 | 文件日期 | 2026-11-04 |
-| 狀態 | ADR-001～004 全部定案（ADR-002、ADR-004 於 2026-11-04 由使用者確認） |
+| 狀態 | ADR-001～004 定案（ADR-002、ADR-004 於 2026-11-04 由使用者確認）；ADR-001 於 2026-11-19 由 ADR-005 取代 |
 | 範圍 | 第一階段（公開級）。第二階段只寫預留的部分，完整設計在第二階段開工前補上 |
 | 依據 | Harbor `standards/DevelopmentStandards.md`、`standards/DeploymentHandbook.md` |
 
@@ -12,7 +12,7 @@
 
 - **零月費**：只用 Cloudflare 與 GitHub 的免費方案（第 8 節）。
 - **效能驗收是 Release Gate**（第 6 節）。
-- **第二階段會加登入**：依部署手冊第 1 章，有登入的網站不能放在 `<owner>.github.io`，所以第一階段就部署在 Cloudflare，之後不用搬家。
+- **共用 `github.io` 來源**：2026-11-19 起部署在 learning-atlas 的 GitHub Pages（ADR-005）。依部署手冊第 1 章，有登入的網站不能放在 `<owner>.github.io`，第二階段要加登入時先重新決定部署位置。
 - **不載入任何第三方資源**：沒有外部腳本、字型、追蹤碼。
 - **內容只有一個來源**：所有課程內容都在 `content/`，網站由它建置產生。
 
@@ -20,17 +20,17 @@
 
 ```text
 GitHub repo（main）
-  └─ GitHub Actions：型別與 lint → 測試 → 內容驗證 → 建置 → 部署
-       └─ Cloudflare Worker（static assets）
-            └─ 靜態網頁：首頁／模組頁／單元頁／案例頁／範本頁
-                 └─ 瀏覽器 localStorage：學習進度
+  └─ GitHub Actions（learning-atlas monorepo）
+       ├─ CI（PR）：型別與 lint → 測試 → 內容驗證 → 依賴稽核 → 建置
+       └─ Pages 部署（main）：各子站建置後組成同一個 GitHub Pages 網站
+            └─ https://frobel0520.github.io/learning-atlas/road-to-solution-architect/
+                 └─ 靜態網頁：首頁／模組頁／單元頁／案例頁／範本頁
+                      └─ 瀏覽器 localStorage：學習進度
 
-第二階段（預留）：
-  同一個 Worker 加上 /api/*（Google 登入、進度同步）＋ D1
-  網頁與 API 同源，session 用 __Host- cookie（部署手冊 2.1）
+舊網址（2026-11-20 起只做轉址）：
+  Cloudflare Worker road-to-solution-architect（static assets）
+    └─ legacy-redirect/public：轉址頁＋sw-kill-switch
 ```
-
-第一階段的 Worker 只提供靜態檔，不需要 Worker 程式。
 
 ## 3. 目錄結構
 
@@ -49,17 +49,16 @@ src/
   progress/                進度模組：model.ts（純函式）＋storage.ts（adapter）
   scripts/                 瀏覽器端：單元頁、首頁／模組頁
   pages/ layouts/ components/ styles/
-public/
-  _headers                 安全標頭與快取設定
+public/                    圖示與 manifest（CSP 在 src/layouts/Base.astro 的 meta）
 scripts/
   validate-content.ts      內容結構驗證
   check-budget.ts          單元頁傳輸量預算
   build-fixture.ts         用測試用內容建置（E2E）
 tests/
   unit/                    進度模組、課綱解析、內容驗證、單元 HTML
-  e2e/                     Playwright＋套用 _headers 的靜態伺服器
+  e2e/                     Playwright＋不加安全標頭的靜態伺服器（同 GitHub Pages）
   fixtures/content/        測試用內容，只給 E2E 使用
-wrangler.toml              只有靜態檔的 Worker
+legacy-redirect/           舊 workers.dev 網址的轉址 Worker（wrangler.toml＋public/）
 ```
 
 - 課綱（模組、單元 id、標題、學習目標）只寫在 `docs/curriculum.md` 第 5 節，網站建置時直接讀取；`module.yaml` 與單元 frontmatter 的標題由內容驗證比對。
@@ -158,11 +157,12 @@ wrangler.toml              只有靜態檔的 Worker
 
 ## 7. 資安
 
-- `public/_headers` 以 Harbor 範本 `standards/deployment-templates/worker-static-assets/_headers` 為基礎，只保留需要的來源：
-  - CSP 以 `default-src 'self'` 為原則，`frame-ancestors 'none'`、`object-src 'none'`。
-  - `X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy`、`Permissions-Policy`。
-  - HTML 設 `Cache-Control: no-cache`；檔名含 hash 的靜態檔可以長期快取。
+- GitHub Pages 不能自訂回應標頭，依部署手冊 2.2 在 `src/layouts/Base.astro` 的 `<head>` 用 meta 設 CSP，每頁都套用：
+  - CSP 以 `default-src 'self'` 為原則，`object-src 'none'`、`base-uri 'self'`、`form-action 'self'`。
   - PWA 需要的 `manifest-src`、`worker-src` 只允許本站（第 12 節）。
+  - `Referrer-Policy` 改用 `<meta name="referrer">`。
+  - 已知缺口（部署手冊 2.2 接受）：`frame-ancestors`、`X-Content-Type-Options`、`X-Frame-Options`、`Permissions-Policy` 用 meta 無效；快取由 GitHub Pages 決定（約 10 分鐘）。
+- 舊網址的轉址 Worker 用 `legacy-redirect/public/_headers` 設完整安全標頭與 `Cache-Control: no-cache`。
 - 是否接 Harbor 的維護模式腳本，在里程碑 2 決定；接的話 CSP 要加入 Harbor 的來源。目前沒有接，CSP 只允許本站。
 - Astro 預設會把小的腳本與樣式內嵌，`astro.config.mjs` 已設定一律輸出成外部檔案，CSP 不需要 `'unsafe-inline'`。
 - 依賴稽核：CI 遇到 high／critical 漏洞時失敗；稽核本身失敗算未完成。
@@ -170,15 +170,11 @@ wrangler.toml              只有靜態檔的 Worker
 
 ## 8. 部署與零月費
 
-- **平台**：Cloudflare Worker static assets，Worker 名稱 `road-to-solution-architect`，網址為 <https://road-to-solution-architect.curio-lab.workers.dev/>（2026-11-05 第一次部署）。
-- **Workflow**：以 Harbor 範本 `standards/deployment-templates/github-actions/deploy-worker.yml` 為基礎。只在 `main` push 或擁有者手動觸發時部署；PR 只跑檢查。
-- **擁有者事前設定**：GitHub Secrets `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`（部署手冊 4.1）。
-- **Rollback**：`wrangler rollback` 回上一版，或 revert PR 後由 CI 重新部署。
-- **零月費檢查**（部署前到 Cloudflare 官方文件重新確認）：
-  - Workers 免費方案；靜態檔請求不計入 Worker 請求數。
-  - 檔案數預估在 1,000 個以內，遠低於每版 20,000 個的上限（部署手冊第 3 章）。
-  - GitHub Actions：公開 repo 免費；如果 repo 是 private，用量計入每月免費分鐘數。
-  - 第二階段的 D1 用量與上限，在第二階段設計時另外確認。
+- **平台**：learning-atlas 的 GitHub Pages，網址 <https://frobel0520.github.io/learning-atlas/road-to-solution-architect/>（2026-11-19 搬入，ADR-005）。建置時以 `ASTRO_BASE` 設定子路徑。
+- **Workflow**：learning-atlas 的 `.github/workflows/pages-deploy.yml`（`main` push 或手動觸發，檢查 owner 與 `main`）；PR 由 `ci.yml` 跑本站的 `npm run check` 與建置。
+- **舊網址**：<https://road-to-solution-architect.curio-lab.workers.dev/> 改由 `legacy-redirect/` 提供轉址頁（帶原路徑、查詢字串與 `#`；從舊主畫面圖示開啟時顯示引導），舊路徑的 `sw.js` 換成 Harbor 的 `sw-kill-switch.js`。部署：`.github/workflows/rtsa-legacy-redirect.yml`，需要擁有者在 learning-atlas 設 GitHub Secrets `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`。
+- **Rollback**：revert PR 後由 Pages workflow 重新部署；轉址 Worker 用 `wrangler rollback` 或 revert 後重新觸發 workflow。
+- **零月費**：GitHub Pages 與公開 repo 的 Actions 免費；轉址 Worker 只有靜態檔，在 Workers 免費方案內。
 
 ## 9. 測試與驗收
 
@@ -190,12 +186,12 @@ wrangler.toml              只有靜態檔的 Worker
 | 內容正確性 | 使用者審閱，`status` 改為 `reviewed`；和結構驗證分開記錄 |
 
 - 「提到 AWS 服務」的判斷：出現 EC2、S3、Lambda、DynamoDB、IAM 等服務名稱，或「AWS／Amazon＋服務名」。單獨寫「AWS」指雲端平台本身，不算。
-- E2E 用 `tests/fixtures/content` 建置（`npm run build:fixture`），不依賴正式內容的文字；測試伺服器會套用 `public/_headers`，所以 CSP 也在 E2E 裡驗證。
+- E2E 用 `tests/fixtures/content` 建置（`npm run build:fixture`），不依賴正式內容的文字；測試伺服器和 GitHub Pages 一樣不加安全標頭，E2E 檢查每頁都有 CSP meta，並抓 CSP 違規。
 | 效能 | 第 6 節 |
 
 ## 10. ADR
 
-### ADR-001：部署在 Cloudflare Worker static assets（定案）
+### ADR-001：部署在 Cloudflare Worker static assets（已由 ADR-005 取代）
 
 - **背景**：第二階段要加登入。部署手冊規定有登入的網站不能放在 `github.io`，需要 API 時網頁與 API 放在同一個 Worker。
 - **選項**：
@@ -240,8 +236,18 @@ wrangler.toml              只有靜態檔的 Worker
 - **決定**：直接寫 SVG 檔，放在單元旁邊，建置時內嵌進頁面，顏色用 CSS 變數以支援深色模式；每張圖附文字說明。
 - **確認**：2026-11-04 使用者確認。
 
+### ADR-005：搬進 learning-atlas，改由 GitHub Pages 部署（2026-11-19）
+
+- **背景**：2026-11-19 Owner 把 8 個學習站（含本站）連同歷史搬進 `frobel0520/learning-atlas` monorepo，統一由 GitHub Pages 部署；原 repo 封存並移到 `frobel0520-archive`。
+- **影響**：
+  - 安全標頭改用 meta CSP（第 7 節），接受部署手冊 2.2 列出的缺口。
+  - 舊網址的瀏覽器資料（localStorage 進度、Cache Storage、已安裝的 PWA）依 origin 保存，不會帶到新網址；轉址頁提示使用者重新安裝；第一階段沒有匯出／匯入（ADR-003），進度不搬。
+  - 共用 `frobel0520.github.io` 來源不能保存登入狀態，第 11 節的第二階段設計要重新決定部署位置。
+- **Rollback**：原 repo 已封存；要回到 Worker 部署時，在本 monorepo 依 Harbor 範本 `deploy-worker.yml` 加部署 workflow。
+
 ## 11. 第二階段預留
 
+- **前提已改變（ADR-005）**：以下是 ADR-001 時的規劃，開工前先決定登入同步要放在哪裡（例如另開獨立網址的 Worker），再補完整設計。
 - 同一個 Worker 加 `/api/*`：Google 登入、讀取與寫入進度。
 - 依部署手冊 2.1：session 用 `__Host-` cookie，網頁與 API 同源、不開 CORS，改資料的請求檢查 `Origin`。
 - D1 存進度，格式沿用第 5.1 節；第一次登入時把瀏覽器進度逐單元合併上傳。
@@ -253,7 +259,7 @@ wrangler.toml              只有靜態檔的 Worker
 
 - `public/manifest.webmanifest`：名稱 SWE Trial、`display: standalone`、192／512 圖示與 maskable 圖示；`apple-touch-icon.png` 給 iOS。圖示由 `favicon.svg` 轉出。
 - Service worker：`npm run build` 在 `astro build` 後執行 `scripts/build-sw.ts`，掃描 `dist/` 產生 `dist/sw.js`。
-  - 預先快取：所有頁面、`/_astro/` 資源、圖示與 manifest（不含 `_headers`、`404.html`）。
+  - 預先快取：所有頁面、`/_astro/` 資源、圖示與 manifest（不含 `404.html`）。
   - 版本：由上述檔案內容算出的 hash；內容沒變，版本就不變。新版啟用後刪除舊版快取。
   - 頁面先連網路、失敗才用快取，內容更新後馬上看得到；`/_astro/` 檔名含 hash，直接用快取。
   - 離線打開沒有快取的頁面時，回首頁。

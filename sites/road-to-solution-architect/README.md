@@ -2,7 +2,7 @@
 
 軟體工程技術導覽的自學網站：介紹軟體工程裡常見的技術，每項技術講清楚是什麼、解決什麼問題、什麼時候用、和替代方案怎麼選。不寫程式，寫給技術基礎不深的人。
 
-repo 名與網址沿用舊名 road-to-solution-architect（2026-11-08 依 CR-001 改變方向，見 `docs/change-requests/CR-001-tech-survey.md`）。
+目錄名與網址沿用舊名 road-to-solution-architect（2026-11-19 搬進 learning-atlas monorepo，原 repo 已封存；2026-11-08 依 CR-001 改變方向，見 `docs/change-requests/CR-001-tech-survey.md`）。
 
 ## 概覽
 
@@ -13,13 +13,13 @@ repo 名與網址沿用舊名 road-to-solution-architect（2026-11-08 依 CR-001
 
 ## 現況
 
-網站：<https://road-to-solution-architect.curio-lab.workers.dev/>（2026-11-05 上線）。
+網站：<https://frobel0520.github.io/learning-atlas/road-to-solution-architect/>（2026-11-19 起；舊網址 <https://road-to-solution-architect.curio-lab.workers.dev/> 只做轉址）。
 
-新課綱的單元製作中。原 SA 課程的模組 0、1 已移出網站，保存在 `archive/sa-track/`。進度只存在瀏覽器，第二階段才加入登入同步。
+30 個單元都已上線，狀態為 draft，等審閱。原 SA 課程的模組 0、1 已移出網站，保存在 `archive/sa-track/`。進度只存在瀏覽器，第二階段才加入登入同步。
 
 ## 開發
 
-需要 Node 22.23.4 以上。
+需要 Node 22.23.4 以上。以下指令都在 `sites/road-to-solution-architect/` 下執行。
 
 ```bash
 npm ci

@@ -81,7 +81,8 @@ jobs:
           case "${{ matrix.site }}" in
             road-to-solution-architect)
               ASTRO_BASE="/learning-atlas/${{ matrix.site }}/" npm run build
-              npm run test
+              # 型別、lint、單元測試、內容驗證、依賴稽核（high／critical 失敗）
+              npm run check
               ;;
             typescript-lab|golang-lab)
               VITE_BASE_PATH="/learning-atlas/${{ matrix.site }}/" npm run build

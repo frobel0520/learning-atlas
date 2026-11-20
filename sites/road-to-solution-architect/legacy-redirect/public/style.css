@@ -1,0 +1,8 @@
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif; background: #faf8f4; color: #222; }
+main { max-width: 32rem; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+h1 { font-size: 1.8rem; margin: 0 0 1rem; }
+p, li { font-size: 1.15rem; line-height: 1.7; }
+.button { display: block; box-sizing: border-box; text-align: center; font-size: 1.2rem; font-weight: 700; padding: 1rem; border-radius: 0.8rem; margin: 1rem 0; text-decoration: none; border: 2px solid #333; background: #333; color: #fff; }
+.guide { display: none; }
+.show-guide .guide { display: block; }
+.show-guide .moving { display: none; }

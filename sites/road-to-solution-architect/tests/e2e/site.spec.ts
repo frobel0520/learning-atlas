@@ -16,12 +16,13 @@ async function watchProblems(page: Page): Promise<string[]> {
 	return problems;
 }
 
-test.describe("版面與安全標頭", () => {
+test.describe("版面與 CSP", () => {
 	for (const path of PAGES) {
 		test(`${path} 沒有水平捲動、沒有 CSP 違規或錯誤`, async ({ page }) => {
 			const problems = await watchProblems(page);
-			const response = await page.goto(path);
-			expect(response?.headers()["content-security-policy"]).toContain("default-src 'self'");
+			await page.goto(path);
+			// GitHub Pages 不能設回應標頭，CSP 放在每頁 <head> 的 meta（部署手冊 2.2）。
+			await expect(page.locator('head meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute("content", /default-src 'self'/);
 			await page.waitForLoadState("networkidle");
 			const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 			expect(overflow).toBeLessThanOrEqual(0);

@@ -17,6 +17,12 @@ const pageTitle = title === siteName ? siteName : `${title}｜${siteName}`;
 <html lang="zh-Hant-TW">
 	<head>
 		<meta charset="utf-8" />
+		<!-- GitHub Pages 不能設回應標頭，CSP 用 meta（部署手冊 2.2）。frame-ancestors 在 meta 無效，不寫。 -->
+		<meta
+			http-equiv="Content-Security-Policy"
+			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+		/>
+		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
 		<link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
