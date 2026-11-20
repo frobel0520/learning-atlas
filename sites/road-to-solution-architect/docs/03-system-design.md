@@ -163,7 +163,7 @@ legacy-redirect/           舊 workers.dev 網址的轉址 Worker（wrangler.tom
   - `Referrer-Policy` 改用 `<meta name="referrer">`。
   - 已知缺口（部署手冊 2.2 接受）：`frame-ancestors`、`X-Content-Type-Options`、`X-Frame-Options`、`Permissions-Policy` 用 meta 無效；快取由 GitHub Pages 決定（約 10 分鐘）。
 - 舊網址的轉址 Worker 用 `legacy-redirect/public/_headers` 設完整安全標頭與 `Cache-Control: no-cache`。
-- 是否接 Harbor 的維護模式腳本，在里程碑 2 決定；接的話 CSP 要加入 Harbor 的來源。目前沒有接，CSP 只允許本站。
+- 不接 Harbor 的維護模式腳本（2026-11-20 使用者決定）：本站沒有臨時下架或公告的需求；腳本會讓每頁最多隱藏 800 ms（影響第 6 節的 LCP 門檻），CSP 也要加入 Harbor 的來源。需要下架時用第 8 節的回滾。CSP 只允許本站。
 - Astro 預設會把小的腳本與樣式內嵌，`astro.config.mjs` 已設定一律輸出成外部檔案，CSP 不需要 `'unsafe-inline'`。
 - 依賴稽核：CI 遇到 high／critical 漏洞時失敗；稽核本身失敗算未完成。
 - Markdown 在建置時轉成 HTML，內容來源只有本 repo。
