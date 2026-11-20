@@ -34,14 +34,14 @@
 
 ## 待辦
 
-- [ ] 【中】新網址的正式效能量測（Lighthouse mobile 各 10 次與作答回饋）：搬到 GitHub Pages 後還沒量。
-- [ ] 【中】`npm run perf:bundle` 在子路徑建置（`ASTRO_BASE`）下找不到檔案：`scripts/check-budget.ts` 沒有去掉 base 前綴。目前用根路徑建置量（最大單元頁 12.4 KB）。
+- [x] 【中】新網址的正式效能量測（2026-11-20）：Lighthouse mobile 各 10 次全部通過，LCP p95 首頁 `842 ms`、模組頁 `846 ms`、單元頁 `880 ms`，CLS `0.000`，TBT p95 ≤ `194 ms`（容器 CPU 雜訊，見證據）；作答回饋 p95 `11.9 ms`（`docs/evidence/perf-20261120-pages.md`）。
+- [x] 【中】`npm run perf:bundle` 子路徑建置（2026-11-20）：`scripts/check-budget.ts` 依 `ASTRO_BASE` 去掉 base 前綴，並加進 learning-atlas CI；最大單元頁 `12.8 KB`（JS `3.3 KB`）。
 - [x] 【高】模組 2、3 的分支 `feature/20261111-m02-m03-content` 開 PR、合併、部署（PR #12 合併 `a94f79d`，Run `43220859313`）。
 - [x] 【高】模組 4（後端基礎）、5（資料庫）與兩頁速查表（PR #13 合併 `47543f3`，Run `43582389099`）。
 - [x] 【高】模組 6（擴展與效能）與對應速查表（PR #14 合併 `d146f97`，Run `43583615888`）。
 - [x] 【高】於本機量測正式網址效能（Lighthouse mobile 與作答回饋）並存到 `docs/evidence/perf-20261114-production.md`。
 - [ ] 【中】Owner 細讀模組 0～6 的 30 個 draft 單元，確認後改成 `reviewed`。2026-11-08 Owner 看過模組 0、1 的標題，同意先繼續寫。
-- [ ] 【中】PWA 手機實機驗收：2026-11-08 已實作（manifest、圖示、service worker 預先快取全部頁面、CSP 加 `worker-src`，見 `docs/03` 第 12 節），E2E 驗過離線開單元頁；還要用手機實際「加到主畫面」並開飛航模式閱讀（Owner 有空時做，2026-11-08 記為待辦）。2026-11-20 起在新網址做；手機上若有舊網址的主畫面圖示，順便確認開啟後會看到「SWE Trial 搬家了」引導頁（舊的離線快取可能要開兩次才會清掉）。
+- [x] 【中】PWA 手機實機驗收：2026-11-20 Owner 用手機在新網址實測確認 OK（manifest、圖示、service worker 離線閱讀見 `docs/03` 第 12 節；E2E 驗過離線開單元頁）。
 - [x] 【中】Harbor 維護模式腳本：2026-11-20 使用者決定不接。本站是純靜態內容網站，沒有臨時下架或公告的需求；接了每頁最多多隱藏 800 ms（影響 LCP 門檻），CSP 也要開放 Harbor 網域。需要下架時用回滾部署（`docs/03` 第 7 節）。
 - [x] 【低】依賴稽核原有 10 個 moderate（eslint 依賴的 minimatch）：2026-11-10 改用 Oxlint、移除 ESLint 後，`npm audit` 為 0。
 - [ ] 【低】決定第二階段的開放對象（只有擁有者，或任何 Google 帳號），以及登入同步的部署位置（共用 `github.io` 不能保存登入狀態，見 `docs/03` ADR-005）。

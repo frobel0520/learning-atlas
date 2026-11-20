@@ -1,6 +1,6 @@
 // Lighthouse 量測（docs/03-system-design.md 第 6 節）：首頁、模組頁、單元頁各跑 N 次，手機預設節流，記錄 p50／p95。
 // 用法：node scripts/perf-lighthouse.mjs <base URL> <輸出 JSON> [次數]
-// 需要 Chrome；可用環境變數 CHROME_PATH 指定。lighthouse 以固定版本透過 npx 執行，不加入專案依賴。
+// 需要 Chrome；可用環境變數 CHROME_PATH 指定，CHROME_FLAGS 覆寫 Chrome 旗標（例如容器裡要加 --no-sandbox）。lighthouse 以固定版本透過 npx 執行，不加入專案依賴。
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -25,7 +25,7 @@ try {
 			const file = join(dir, `${name}-${i}.json`);
 			execFileSync(
 				process.platform === "win32" ? "npx.cmd" : "npx",
-				["--yes", LIGHTHOUSE, `${base}${path}`, "--only-categories=performance", "--output=json", `--output-path=${file}`, "--quiet", "--chrome-flags=--headless=new"],
+				["--yes", LIGHTHOUSE, `${base}${path}`, "--only-categories=performance", "--output=json", `--output-path=${file}`, "--quiet", `--chrome-flags=${process.env.CHROME_FLAGS ?? "--headless=new"}`],
 				{ stdio: "inherit", shell: process.platform === "win32" },
 			);
 			const audits = JSON.parse(readFileSync(file, "utf8")).audits;
