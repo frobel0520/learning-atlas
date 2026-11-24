@@ -74,7 +74,7 @@ p, li { text-wrap: pretty; }
 .text-button, .avatar-button { border: 0; background: transparent; cursor: pointer; }
 .text-button { color: var(--teal-dark); font: 11px var(--mono); padding: 10px 0; text-decoration: none; }
 .text-button:hover { text-decoration: underline; text-underline-offset: 4px; }
-.atlas-link { color: var(--teal-dark); font: 11px var(--mono); text-decoration: none; white-space: nowrap; }
+.atlas-link { display: inline-flex; min-height: 36px; align-items: center; color: var(--teal-dark); font: 11px var(--mono); text-decoration: none; white-space: nowrap; }
 .atlas-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .avatar-button { width: 32px; height: 32px; color: var(--paper); background: var(--teal-dark); font: 500 11px var(--mono); }
 
