@@ -525,17 +525,15 @@ h3.block-title {
 /* ---------- Pipeline 圖 ---------- */
 
 .pipeline {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr) auto) minmax(0, 1fr);
   margin: 34px 0 8px;
 }
 
 .pipe-box {
-  flex: 1 1 130px;
-  min-width: 118px;
+  grid-row: 1;
   padding: 26px 12px;
+  overflow-wrap: anywhere;
   text-align: center;
   font: 500 19px var(--serif);
   border: 1px solid var(--ink);
@@ -555,26 +553,33 @@ h3.block-title {
 }
 
 .pipe-arrow {
+  grid-row: 1;
   align-self: center;
   padding: 0 10px;
   color: var(--teal-dark);
   font: 16px var(--mono);
-  flex: none;
 }
 
-.pipe-captions {
-  display: flex;
-  gap: 0;
+.pipe-caption {
+  grid-row: 2;
+  padding-top: 6px;
   color: var(--muted);
   font: 11px var(--mono);
-  margin-bottom: 8px;
+  text-align: center;
 }
 
-.pipe-captions span {
-  flex: 1 1 130px;
-  min-width: 118px;
-  padding-top: 6px;
-  text-align: center;
+.pipe-caption--input { grid-column: 3; }
+.pipe-caption--output { grid-column: 7; }
+
+@media (max-width: 600px) {
+  .pipeline {
+    grid-template-columns: minmax(0, 1fr);
+    text-align: center;
+  }
+
+  .pipeline > * { grid-area: auto; }
+  .pipe-box { padding: 10px 12px; }
+  .pipe-arrow { justify-self: center; transform: rotate(90deg); }
 }
 
 /* ---------- 縱深防禦堆疊 ---------- */
@@ -1170,6 +1175,10 @@ table.events td.excerpt {
 
   .sidebar.open {
     transform: translateX(0);
+  }
+
+  .sidebar:not(.open) {
+    visibility: hidden;
   }
 
   .main-area {
