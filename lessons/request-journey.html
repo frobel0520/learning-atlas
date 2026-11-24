@@ -108,7 +108,12 @@ table.data td:first-child code { white-space: nowrap; }
 .progress-mini b { color: var(--teal-dark); font-weight: 500; }
 .pbar { width: 96px; height: 6px; background: var(--surface); border: 1px solid var(--line); }
 .pbar i { display: block; height: 100%; width: 0; background: var(--teal-dark); transition: width .4s ease; }
-@media (max-width: 560px) { .crumb { display: none; } .pbar { width: 56px; } }
+@media (max-width: 560px) {
+  .topbar { gap: 8px; }
+  .crumb, .topbar .spacer { display: none; }
+  .progress-mini { min-width: 0; margin-inline-start: auto; gap: 6px; }
+  .pbar { width: 56px; min-width: 0; }
+}
 
 /* ---------- shell + route index ---------- */
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); }
@@ -607,7 +612,7 @@ table.data tr.miss td { color: var(--muted); }
 .cmd-list { display: grid; gap: 12px; }
 .cmd { display: grid; gap: 6px; }
 .cmd p { margin: 0; font-size: 14.5px; }
-.status-line { font: 12px var(--mono); color: var(--muted); }
+.status-line { font: 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
 .status-line.ok { color: var(--ok); }
 .status-line.fail { color: var(--fail); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 11.5px var(--mono); color: var(--muted); }
