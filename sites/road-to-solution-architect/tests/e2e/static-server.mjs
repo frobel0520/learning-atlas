@@ -2,16 +2,28 @@
 // 用法：node tests/e2e/static-server.mjs <目錄> <port>
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
-import { extname, join, normalize, resolve } from "node:path";
+import { extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 const root = resolve(process.argv[2] ?? "dist-fixture");
 const port = Number(process.argv[3] ?? 4321);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".json": "application/json" };
 
 createServer((request, response) => {
-	const path = decodeURIComponent(new URL(request.url ?? "/", "http://localhost").pathname);
-	let file = normalize(join(root, path));
-	if (!file.startsWith(root)) {
+	let path;
+	try {
+		const rawPath = (request.url ?? "/").split("?")[0].split("#")[0];
+		path = decodeURIComponent(rawPath);
+	} catch {
+		response.writeHead(400).end();
+		return;
+	}
+	if (!path.startsWith("/") || path.includes("\0") || path.includes("\\")) {
+		response.writeHead(400).end();
+		return;
+	}
+	let file = resolve(root, `.${path}`);
+	const rel = relative(root, file);
+	if (rel === ".." || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
 		response.writeHead(400).end();
 		return;
 	}

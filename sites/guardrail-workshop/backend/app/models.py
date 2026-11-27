@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -66,21 +66,25 @@ class GuardResult(BaseModel):
     reask_reason: str | None = None
 
 
+SourceText = Annotated[str, Field(max_length=10000)]
+ValidatorId = Annotated[str, Field(max_length=64)]
+
+
 class GuardRequest(BaseModel):
-    text: str
-    enabled: list[str] | None = Field(
-        default=None, description="要啟用的 validator id；None 代表用預設值"
+    text: str = Field(..., max_length=10000)
+    enabled: list[ValidatorId] | None = Field(
+        default=None, max_length=32, description="要啟用的 validator id；None 代表用預設值"
     )
-    sources: list[str] = Field(
-        default_factory=list, description="grounding 用的來源文件（幻覺檢查會對照它）"
+    sources: list[SourceText] = Field(
+        default_factory=list, max_length=20, description="grounding 用的來源文件（幻覺檢查會對照它）"
     )
 
 
 class ChatRequest(BaseModel):
-    message: str
-    enabled_input: list[str] | None = None
-    enabled_output: list[str] | None = None
-    sources: list[str] = Field(default_factory=list)
+    message: str = Field(..., max_length=10000)
+    enabled_input: list[ValidatorId] | None = Field(default=None, max_length=32)
+    enabled_output: list[ValidatorId] | None = Field(default=None, max_length=32)
+    sources: list[SourceText] = Field(default_factory=list, max_length=20)
     use_llm: bool = Field(
         default=True, description="False 時強制走內建 stub，不呼叫真的模型"
     )

@@ -2,7 +2,14 @@ from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlparse
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+DEFAULT_CORS_ORIGINS = (
+    "http://localhost:8000,http://127.0.0.1:8000,"
+    "http://localhost:5173,http://127.0.0.1:5173"
+)
+DISALLOWED_WEBHOOK_SECRETS = {"change-me-in-production"}
 
 
 class Settings(BaseSettings):
@@ -14,8 +21,9 @@ class Settings(BaseSettings):
 
     app_name: str = "AI-Agent-Tutorial"
     app_env: str = "development"
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"
     port: int = 8000
+    cors_origins: str = DEFAULT_CORS_ORIGINS
     database_url: str = "sqlite:///./data/app.db"
     chroma_dir: str = "./data/chroma"
 
@@ -31,10 +39,23 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
 
-    webhook_secret: str = "change-me-in-production"
+    webhook_secret: str = ""
+    webhook_allow_private_targets: bool = False
+    max_webhook_subscriptions: int = 20
 
     dify_api_base: str = "http://localhost/v1"
     dify_api_key: str = ""
+
+    @field_validator("webhook_secret")
+    @classmethod
+    def validate_webhook_secret(cls, value: str) -> str:
+        if value.strip().lower() in DISALLOWED_WEBHOOK_SECRETS:
+            raise ValueError("WEBHOOK_SECRET must not be 'change-me-in-production'")
+        return value
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [item.strip() for item in self.cors_origins.split(",") if item.strip()]
 
     @property
     def dify_configured(self) -> bool:

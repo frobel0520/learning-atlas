@@ -1,16 +1,16 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 
 class NoteCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=200, examples=["LangChain 入門"])
-    content: str = Field(..., min_length=1, examples=["LangChain 是建構 LLM 應用的框架。"])
+    content: str = Field(..., min_length=1, max_length=20000, examples=["LangChain 是建構 LLM 應用的框架。"])
 
 
 class NoteUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
-    content: str | None = Field(default=None, min_length=1)
+    content: str | None = Field(default=None, min_length=1, max_length=20000)
 
 
 class NoteRead(BaseModel):
@@ -24,7 +24,7 @@ class NoteRead(BaseModel):
 
 
 class AskRequest(BaseModel):
-    question: str = Field(..., min_length=1, examples=["LangChain 可以做什麼？"])
+    question: str = Field(..., min_length=1, max_length=2000, examples=["LangChain 可以做什麼？"])
     top_k: int = Field(default=3, ge=1, le=10)
 
 
@@ -36,9 +36,16 @@ class AskResponse(BaseModel):
 
 
 class WebhookCreate(BaseModel):
-    url: HttpUrl
-    event_types: str = Field(default="*", examples=["note.created,ask.completed"])
-    secret: str | None = None
+    url: HttpUrl = Field(..., max_length=2048)
+    event_types: str = Field(default="*", min_length=1, max_length=500, examples=["note.created,ask.completed"])
+    secret: str | None = Field(default=None, max_length=256)
+
+    @field_validator("secret")
+    @classmethod
+    def reject_placeholder_secret(cls, value: str | None) -> str | None:
+        if value is not None and value.strip().lower() == "change-me-in-production":
+            raise ValueError("secret must not be 'change-me-in-production'")
+        return value
 
 
 class WebhookRead(BaseModel):
@@ -73,8 +80,8 @@ class HealthResponse(BaseModel):
 
 
 class DifyAskRequest(BaseModel):
-    question: str = Field(..., min_length=1)
-    user: str = Field(default="tutorial-user")
+    question: str = Field(..., min_length=1, max_length=2000)
+    user: str = Field(default="tutorial-user", min_length=1, max_length=128)
 
 
 class DifyAskResponse(BaseModel):
