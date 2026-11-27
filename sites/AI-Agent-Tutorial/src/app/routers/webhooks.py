@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -5,15 +7,36 @@ from app.config import Settings, get_settings
 from app.database import EventLog, WebhookSubscription, get_db
 from app.schemas import DifyAskRequest, DifyAskResponse, EventRead, WebhookCreate, WebhookRead
 from app.services.dify_client import ask_dify
-from app.services.webhook_dispatcher import dispatch_event
+from app.services.webhook_dispatcher import dispatch_event, validate_webhook_target
 
+logger = logging.getLogger(__name__)
 router = APIRouter(tags=["webhooks", "dify"])
 
 
 @router.post("/webhooks", response_model=WebhookRead, status_code=status.HTTP_201_CREATED)
-def create_webhook(payload: WebhookCreate, db: Session = Depends(get_db)) -> WebhookSubscription:
+def create_webhook(
+    payload: WebhookCreate,
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> WebhookSubscription:
+    active_count = db.query(WebhookSubscription).count()
+    if active_count >= settings.max_webhook_subscriptions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Maximum active webhook subscriptions ({settings.max_webhook_subscriptions}) reached",
+        )
+
+    target_url = str(payload.url)
+    try:
+        validate_webhook_target(
+            target_url,
+            allow_private_targets=settings.webhook_allow_private_targets,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
     subscription = WebhookSubscription(
-        url=str(payload.url),
+        url=target_url,
         event_types=payload.event_types,
         secret=payload.secret,
     )
@@ -53,7 +76,8 @@ async def dify_ask(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Dify request failed: {exc}") from exc
+        logger.exception("Dify upstream request failed")
+        raise HTTPException(status_code=502, detail="Dify request failed") from exc
 
     await dispatch_event(
         db,

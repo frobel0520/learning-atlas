@@ -26,6 +26,11 @@ from .rules import latency_reference, load_rules, scenarios, validator_specs
 
 BLOCKED_REPLY = "抱歉，這個請求我無法處理。如果是訂單或保固問題，方便提供訂單編號嗎？"
 REASK_REPLY = "這個問題超出我能協助的範圍，我們回到訂單、出貨或保固的話題好嗎？"
+DEFAULT_CORS_ORIGINS = (
+    "http://localhost:5173,http://127.0.0.1:5173,"
+    "http://localhost:5174,http://127.0.0.1:5174"
+)
+MANDATORY_LLM_INPUT_GUARDS = ("prompt_injection", "input_secret")
 
 app = FastAPI(
     title="Guardrail Workshop API",
@@ -33,10 +38,10 @@ app = FastAPI(
     description="LLM 應用的安全防護層：Input Guard / Output Guard / Tool Guard 的可跑實作。",
 )
 
-_origins = os.getenv("GUARDRAIL_CORS_ORIGINS", "*")
+_origins = os.getenv("GUARDRAIL_CORS_ORIGINS", DEFAULT_CORS_ORIGINS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if _origins == "*" else [o.strip() for o in _origins.split(",")],
+    allow_origins=["*"] if _origins.strip() == "*" else [o.strip() for o in _origins.split(",") if o.strip()],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -105,7 +110,14 @@ def chat(payload: ChatRequest) -> ChatResponse:
     """完整 pipeline：使用者輸入 → Input Guard → LLM → Output Guard → 應用。"""
     started = time.perf_counter()
 
-    input_guard = Guard.for_stage(Stage.INPUT, payload.enabled_input)
+    effective_enabled_input = payload.enabled_input
+    if payload.use_llm and (bool(os.getenv("ANTHROPIC_API_KEY")) or llm.anthropic_available()):
+        if effective_enabled_input is not None:
+            effective_enabled_input = list(
+                dict.fromkeys([*MANDATORY_LLM_INPUT_GUARDS, *effective_enabled_input])
+            )
+
+    input_guard = Guard.for_stage(Stage.INPUT, effective_enabled_input)
     input_result = input_guard.validate(payload.message, {"sources": payload.sources})
     store.record(input_result)
 

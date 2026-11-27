@@ -67,14 +67,38 @@ test('worker enforces POST and forwards only code to the fixed upstream', async 
     const response = await worker.fetch(new Request('https://runner.test', { method: 'POST', headers: { Origin: 'https://frobel0520.github.io', 'Content-Type': 'application/json' }, body: JSON.stringify({ code: 'package main' }) }), { ALLOWED_ORIGIN: 'https://frobel0520.github.io' });
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('access-control-allow-origin'), 'https://frobel0520.github.io');
+    assert.equal(response.headers.get('content-type'), 'application/json; charset=utf-8');
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
     assert.equal(forwarded.request, 'https://go.dev/_/compile');
     assert.equal((await forwarded.options.body).get('body'), 'package main');
   } finally { globalThis.fetch = originalFetch; }
 });
 
-test('worker rejects oversized bodies and non POST requests', async () => {
+test('worker rejects missing or mismatched Origin, oversized bodies, non POST requests, and omits raw error detail on 502', async () => {
   const env = { ALLOWED_ORIGIN: 'https://frobel0520.github.io' };
   assert.equal((await worker.fetch(new Request('https://runner.test'), env)).status, 405);
+  assert.equal((await worker.fetch(new Request('https://runner.test', { method: 'POST', body: '{"code":"package main"}' }), env)).status, 403);
+  assert.equal((await worker.fetch(new Request('https://runner.test', { method: 'POST', headers: { Origin: 'https://evil.example' }, body: '{"code":"package main"}' }), env)).status, 403);
   const huge = JSON.stringify({ code: 'x'.repeat(128 * 1024) });
-  assert.equal((await worker.fetch(new Request('https://runner.test', { method: 'POST', body: huge }), env)).status, 413);
+  assert.equal((await worker.fetch(new Request('https://runner.test', { method: 'POST', headers: { Origin: 'https://frobel0520.github.io' }, body: huge }), env)).status, 413);
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => { throw new Error('internal-socket-detail'); };
+  try {
+    const failed = await worker.fetch(
+      new Request('https://runner.test', {
+        method: 'POST',
+        headers: { Origin: 'https://frobel0520.github.io', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: 'package main' }),
+      }),
+      env,
+    );
+    assert.equal(failed.status, 502);
+    assert.equal(failed.headers.get('content-type'), 'application/json; charset=utf-8');
+    assert.equal(failed.headers.get('x-content-type-options'), 'nosniff');
+    const payload = await failed.json();
+    assert.deepEqual(payload, { error: 'Upstream Go service unavailable' });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

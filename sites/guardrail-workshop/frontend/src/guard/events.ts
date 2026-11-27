@@ -22,9 +22,11 @@ function write(events: GuardEvent[]): void {
   }
 }
 
-function excerpt(text: string, limit = 120): string {
-  const compact = text.split(/\s+/).join(" ");
-  return compact.length <= limit ? compact : `${compact.slice(0, limit - 1)}…`;
+export function maskExcerpt(text: string, limit = 120): string {
+  const compact = text.split(/\s+/).join(" ").trim();
+  if (!compact) return "[REDACTED]";
+  const masked = compact.length > 2 ? `${compact.slice(0, 2)}…[REDACTED]` : "[REDACTED]";
+  return masked.length <= limit ? masked : `${masked.slice(0, limit - 1)}…`;
 }
 
 export function record(result: GuardResult): void {
@@ -48,7 +50,7 @@ export function record(result: GuardResult): void {
       on_fail: item.on_fail,
       outcome: result.outcome,
       label: labels.join("、") || "未分類",
-      excerpt: excerpt(item.violations[0]?.matched_text ?? result.original_text),
+      excerpt: maskExcerpt(item.violations[0]?.matched_text ?? result.original_text),
     });
   }
 

@@ -103,8 +103,11 @@ def record(result: GuardResult) -> int:
 
 
 def _excerpt(text: str, limit: int = 120) -> str:
-    text = " ".join(text.split())
-    return text if len(text) <= limit else text[: limit - 1] + "…"
+    compact = " ".join(text.split())
+    if not compact:
+        return "[REDACTED]"
+    masked = f"{compact[:2]}…[REDACTED]" if len(compact) > 2 else "[REDACTED]"
+    return masked if len(masked) <= limit else masked[: limit - 1] + "…"
 
 
 def _row_to_event(row: sqlite3.Row) -> EventOut:
