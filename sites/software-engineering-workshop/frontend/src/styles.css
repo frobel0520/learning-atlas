@@ -328,6 +328,10 @@ textarea:focus-visible {
 .top-status b { color: var(--teal-dark); font-weight: 500; }
 
 .atlas-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .25em;
+  min-height: 36px;
   color: var(--teal-dark);
   font: 11px "DM Mono", monospace;
   text-decoration: none;
@@ -953,6 +957,7 @@ h1 em {
 /* Track-first curriculum flow */
 .nav-label-nested { margin-top: 26px; }
 .track-card-link {
+  min-height: 36px;
   margin-top: 17px;
   padding: 0 0 4px;
   border: 0;
