@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://harbor-1wk.pages.dev 'sha256-fB0eioFuy+A6AK4n1TXfJp+KKAITELsD0rjSgoaQ/Xg='; connect-src 'self' https://harbor-1wk.pages.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://harbor-1wk.pages.dev 'sha256-1odw5dNl47jp7GB9mtNZ2SNfSPW8TtXSbulNrErAoZ0='; connect-src 'self' https://harbor-1wk.pages.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script src="https://harbor-1wk.pages.dev/embed/maintenance.js" data-project="learning-hub"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -248,6 +248,7 @@ footer p { margin: 0; }
 @media (max-width: 720px) {
   .sidebar { width: 260px; background: var(--paper); transform: translateX(-100%); transition: transform .25s; }
   .sidebar.open { transform: translateX(0); }
+  .sidebar:not(.open) { visibility: hidden; }
   .main-area { margin-left: 0; }
   .menu-button { display: block; }
   .menu-scrim.open { display: block; position: fixed; inset: 0 0 0 260px; z-index: 15; border: 0; background: rgba(26, 26, 24, .4); }
@@ -499,15 +500,57 @@ footer p { margin: 0; }
   var sidebar = document.getElementById('sidebar');
   var scrim = document.getElementById('scrim');
   var menu = document.getElementById('menu');
+  var mobile = window.matchMedia('(max-width: 720px)');
   function setOpen(open) {
     sidebar.classList.toggle('open', open);
+    sidebar.inert = mobile.matches && !open;
     scrim.classList.toggle('open', open);
     menu.setAttribute('aria-expanded', String(open));
   }
-  menu.addEventListener('click', function () { setOpen(!sidebar.classList.contains('open')); });
-  scrim.addEventListener('click', function () { setOpen(false); });
-  sidebar.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+  function closeMenu() {
+    menu.focus({ preventScroll: true });
+    setOpen(false);
+  }
+  function syncLayout() {
+    if (mobile.matches && sidebar.contains(document.activeElement)) {
+      menu.focus({ preventScroll: true });
+    }
+    setOpen(false);
+  }
+  menu.addEventListener('click', function () {
+    if (sidebar.classList.contains('open')) {
+      closeMenu();
+    } else if (mobile.matches) {
+      setOpen(true);
+      sidebar.querySelector('a[href]').focus({ preventScroll: true });
+    }
+  });
+  scrim.addEventListener('click', closeMenu);
+  sidebar.addEventListener('click', function (e) {
+    var link = e.target.closest('a');
+    if (!link || !mobile.matches || !sidebar.classList.contains('open')) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    var target = link.getAttribute('href').startsWith('#') && document.getElementById(link.hash.slice(1));
+    if (!target) {
+      closeMenu();
+      return;
+    }
+    e.preventDefault();
+    if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+    target.scrollIntoView();
+    var heading = target.querySelector('h1, h2') || target;
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+    setOpen(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+      e.preventDefault();
+      closeMenu();
+    }
+  });
+  mobile.addEventListener('change', syncLayout);
+  syncLayout();
 
   var links = Array.prototype.slice.call(document.querySelectorAll('#route-nav a, #lesson-nav a'));
   if (!('IntersectionObserver' in window)) return;

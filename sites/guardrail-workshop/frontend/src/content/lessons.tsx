@@ -12,26 +12,19 @@ export interface Lesson {
 
 function Pipeline() {
   return (
-    <>
-      <div className="pipeline">
-        <div className="pipe-box steel">使用者輸入</div>
-        <span className="pipe-arrow">→</span>
-        <div className="pipe-box teal">Input Guard</div>
-        <span className="pipe-arrow">→</span>
-        <div className="pipe-box navy">LLM</div>
-        <span className="pipe-arrow">→</span>
-        <div className="pipe-box teal">Output Guard</div>
-        <span className="pipe-arrow">→</span>
-        <div className="pipe-box steel">應用 / 使用者</div>
-      </div>
-      <div className="pipe-captions">
-        <span />
-        <span>驗證輸入：擋掉攻擊與離題</span>
-        <span />
-        <span>驗證輸出：擋掉幻覺與外洩</span>
-        <span />
-      </div>
-    </>
+    <div className="pipeline">
+      <div className="pipe-box steel">使用者輸入</div>
+      <span className="pipe-arrow" aria-hidden="true">→</span>
+      <div className="pipe-box teal">Input Guard</div>
+      <span className="pipe-caption pipe-caption--input">驗證輸入：擋掉攻擊與離題</span>
+      <span className="pipe-arrow" aria-hidden="true">→</span>
+      <div className="pipe-box navy">LLM</div>
+      <span className="pipe-arrow" aria-hidden="true">→</span>
+      <div className="pipe-box teal">Output Guard</div>
+      <span className="pipe-caption pipe-caption--output">驗證輸出：擋掉幻覺與外洩</span>
+      <span className="pipe-arrow" aria-hidden="true">→</span>
+      <div className="pipe-box steel">應用 / 使用者</div>
+    </div>
   );
 }
 

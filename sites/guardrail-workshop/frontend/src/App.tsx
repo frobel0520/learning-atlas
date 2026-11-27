@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DEFAULT_API_URL,
   createClient,
@@ -13,6 +13,8 @@ import { Playground } from "./components/Playground";
 import { PageHeader } from "./components/ui";
 import { LESSONS } from "./content/lessons";
 import { RULES } from "./guard/engine";
+
+const MOBILE_NAV = "(max-width: 900px)";
 
 const LAB_ROUTES = [
   { id: "playground", nav: "互動實驗場" },
@@ -92,18 +94,51 @@ export default function App() {
   const [apiUrl, setApiUrlState] = useState<string>(loadApiUrl);
   const [health, setHealth] = useState<"unknown" | "ok" | "bad">("unknown");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobile, setMobile] = useState(() => window.matchMedia(MOBILE_NAV).matches);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const sidebar = useRef<HTMLElement>(null);
+  const content = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    const query = window.matchMedia(MOBILE_NAV);
+    const syncLayout = () => {
+      if (query.matches && sidebar.current?.contains(document.activeElement)) {
+        menuButton.current?.focus({ preventScroll: true });
+      }
+      setMobile(query.matches);
+      setMenuOpen(false);
+    };
+    query.addEventListener("change", syncLayout);
+    return () => query.removeEventListener("change", syncLayout);
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) sidebar.current?.querySelector<HTMLAnchorElement>("a[href]")?.focus({ preventScroll: true });
+  }, [menuOpen]);
+
+  function closeMenu() {
+    menuButton.current?.focus({ preventScroll: true });
     setMenuOpen(false);
-  }, [route]);
+  }
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      closeMenu();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [menuOpen]);
+
+  function navigateFromMenu(id: string) {
+    if (menuOpen) {
+      content.current?.focus({ preventScroll: true });
+      setMenuOpen(false);
+    }
+    go(id);
+  }
 
   const client = useMemo(() => createClient(mode, apiUrl), [mode, apiUrl]);
 
@@ -140,7 +175,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <nav className={`sidebar${menuOpen ? " open" : ""}`} id="sidebar" aria-label="課程導覽">
+      <nav className={`sidebar${menuOpen ? " open" : ""}`} id="sidebar" aria-label="課程導覽" ref={sidebar} inert={mobile && !menuOpen}>
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">GW</span>
           <span className="brand-title">Guardrail Workshop</span>
@@ -155,7 +190,7 @@ export default function App() {
           <button
             key={l.id}
             className={`nav-link ${route === l.id ? "active" : ""}`}
-            onClick={() => go(l.id)}
+            onClick={() => navigateFromMenu(l.id)}
           >
             <span className="nav-num">{String(i + 1).padStart(2, "0")}</span>
             <span>{l.nav}</span>
@@ -167,7 +202,7 @@ export default function App() {
           <button
             key={l.id}
             className={`nav-link ${route === l.id ? "active" : ""}`}
-            onClick={() => go(l.id)}
+            onClick={() => navigateFromMenu(l.id)}
           >
             <span className="nav-num">▸</span>
             <span>{l.nav}</span>
@@ -180,18 +215,19 @@ export default function App() {
         className={`menu-scrim${menuOpen ? " open" : ""}`}
         aria-label="關閉選單"
         tabIndex={-1}
-        onClick={() => setMenuOpen(false)}
+        onClick={closeMenu}
       />
 
       <div className="main-area">
       <header className="topbar">
         <button
           type="button"
+          ref={menuButton}
           className="menu-button"
           aria-label="開啟選單"
           aria-expanded={menuOpen}
           aria-controls="sidebar"
-          onClick={() => setMenuOpen((open) => !open)}
+          onClick={() => menuOpen ? closeMenu() : setMenuOpen(true)}
         >
           ☰
         </button>
@@ -203,7 +239,7 @@ export default function App() {
         <ModeSwitch mode={mode} setMode={setMode} apiUrl={apiUrl} setApiUrl={setApiUrl} health={health} />
       </header>
 
-      <main className="content">
+      <main className="content" ref={content} tabIndex={-1}>
         {lesson ? (
           <>
             <PageHeader
